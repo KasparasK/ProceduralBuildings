@@ -1,15 +1,46 @@
-﻿using UnityEngine;
+﻿using Boo.Lang;
+using UnityEngine;
 using TMPro;
+public class Vertex
+{
+    public Vector3 pos;
+    public Vector3[] normals;
+
+    public Vertex(Vector3 pos, int normalsCount)
+    {
+        this.pos = pos;
+        normals = new Vector3[normalsCount];
+    }
+}
+
+enum RactangleParts
+{
+    BOT_LEFT_DOWN,
+    BOT_RIGHT_DOWN,
+    BOT_LEFT_UP,
+    BOT_RIGHT_UP,
+
+    TOP_LEFT_DOWN,
+    TOP_RIGHT_DOWN,
+    TOP_LEFT_UP,
+    TOP_RIGHT_UP,
+
+    LEFT_DOWN_SIDE,
+    LEFT_UP_SIDE,
+    RIGHT_DOWN_SIDE,
+    RIGHT_UP_SIDE,
+}
 
 public class MeshGenerator {
 
     int xSize, ySize, zSize;
 
     private Mesh mesh;
-    private Vector3[] vertices;
+    private Vertex[] vertices;
     int[] triangles;
     int vertex;
-
+ //  private Vector3[] normals;
+    private int verticesCount;
 
     public GameObject GenerateRectangle(Material material,int _xSize, int _ySize, int _zSize, GameObject vertextNumPref,GameObject canvas)
     {
@@ -24,15 +55,18 @@ public class MeshGenerator {
         mesh.name = "ProceduralRectangle";
         newMesh.name = "ProceduralRectangle";
 
-        int cornerVertices = 8;
-        int edgeVertices = (xSize + ySize + zSize - 3) * 4;
+        int cornerVertices = 8*3;
+        int edgeVertices = (xSize + ySize + zSize - 3) * 8;
         int faceVertices = (
             (xSize - 1) * (ySize - 1) +
             (xSize - 1) * (zSize - 1) +
             (ySize - 1) * (zSize - 1)) * 2;
-        vertices = new Vector3[cornerVertices + edgeVertices + faceVertices];
 
-      
+        verticesCount = cornerVertices + edgeVertices + faceVertices;
+        Debug.Log(faceVertices);
+        vertices = new Vertex[verticesCount];
+      //  normals = new Vector3[vertices.Length];
+
         CreateMesh(vertextNumPref,canvas);
         //Debug.Log("edgeVertices: " + cornerVertices + " edgeVertices: " + edgeVertices + " faceVertices: " + faceVertices);
 
@@ -42,20 +76,33 @@ public class MeshGenerator {
     void CreateMesh(GameObject vertextNumPref, GameObject canvas)
     {
         GenerateVertices();
-        VisualiseVertices(vertextNumPref, canvas);
-       mesh.vertices = vertices;
+      
+        Vector3[] finalVertices = new Vector3[verticesCount];
+        List<Vector3> finalNormals = new List<Vector3>();
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            finalVertices[i] = vertices[i].pos;
+            finalNormals.AddRange(vertices[i].normals);
+        }
+        VisualiseVertices(finalVertices,vertextNumPref, canvas);
+
+        mesh.vertices = finalVertices;
         CreateTriangles();
         mesh.triangles = triangles;
-        mesh.RecalculateNormals();
+        Debug.Log(mesh.normals.Length);
+        mesh.normals = finalNormals.ToArray();
+
+    //    mesh.RecalculateNormals();
     }
 
-    void VisualiseVertices(GameObject vertextNumPref, GameObject canvas)
+
+    void VisualiseVertices(Vector3[] finalVertices, GameObject vertextNumPref, GameObject canvas)
     {
-        for (int i = 0; i < vertices.Length; i++)
+        for (int i = 0; i < finalVertices.Length; i++)
         {
           GameObject vert =  GameObject.Instantiate(vertextNumPref,canvas.transform);
           vert.GetComponent<TMP_Text>().SetText(i.ToString());
-          vert.transform.position = vertices[i];
+          vert.transform.position = finalVertices[i];
         }
     }
 
@@ -67,43 +114,75 @@ public class MeshGenerator {
         for (int y = 0; y <= ySize; y++)
         {
             //sukuriamas spirale pirmas ziedas
-            for (int x = 0; x <= xSize; x++)
+            for (int x = 0; x <= xSize; x++, v++)
             {
-                vertices[v++] = new Vector3(x, y, 0);
-                
+                switch (x)
+                {
+                    case 0: //kampas 
+                        SetVertex(v, x, y, 0,new List<Vector3>
+                        {
+                            Vector3.one
+                            //new Vector3(1,0,0), new Vector3(0, 1, 0), new Vector3(0, 0, 1)
+                        });
+                        break;
+                    default:
+                        SetVertex(v, x, y, 0, new List<Vector3> { Vector3.one });
+                        break;
+
+                }
+                //   Debug.Log("[1] "+v);
+
             }
-            for (int z = 1; z <= zSize; z++)
+            for (int z = 0; z <= zSize; z++, v++)
             {
-                vertices[v++] = new Vector3(xSize, y, z);
+              //  Debug.Log("[2] " + v);
+
+                SetVertex(v, xSize, y, z, new List<Vector3> { Vector3.one });
             }
-            for (int x = xSize - 1; x >= 0; x--)
+            for (int x = xSize; x >= 0; x--, v++)
             {
-                vertices[v++] = new Vector3(x, y, zSize);
+            //    Debug.Log("[3] " + v);
+
+                SetVertex(v, x, y, zSize, new List<Vector3> { Vector3.one });
             }
-            for (int z = zSize - 1; z > 0; z--)
+            for (int z = zSize; z >= 0; z--, v++)
             {
-                vertices[v++] = new Vector3(0, y, z);
+             //   Debug.Log("[4] " + v);
+
+                SetVertex(v, 0, y, z, new List<Vector3> { Vector3.one });
             }
         }
 
         //dugnas ir virsus
         for (int y = ySize; y >= 0; y -= ySize)
         {
-            for (int z = 1; z < zSize; z++)
+            for (int z = 0; z <= zSize; z++)
             {
-                for (int x = 1; x < xSize; x++)
+                for (int x = 0; x <= xSize; x++, v++)
                 {
-                    vertices[v] = new Vector3(x, y, z);
-                  //  Debug.Log(v + " y: " + y + " x: " + x + " z: " + z);
-                    v++;
+                 //   Debug.Log("[5]+ " + v);
+
+                    SetVertex(v, x, y, z, new List<Vector3> { Vector3.one });
                 }
             }
 
         }
+        
 
 
     }
+    private void SetVertex(int i, int x, int y, int z,List<Vector3> normalVectors)
+    {
 
+            vertices[i]=  new Vertex(new Vector3(x, y, z), normalVectors.Count);
+        //   Vector3 inner =vertices[i].pos
+        for (int j = 0; j < normalVectors.Count; j++)
+        {
+            vertices[i].normals[j] = (vertices[i].pos - normalVectors[j]).normalized;
+        }
+        //   normals[i] = 
+
+    }
     void CreateTriangles()
     {
         vertex = 0;
@@ -278,20 +357,6 @@ public class MeshGenerator {
 
         t += 6; 
     }
-/*
-    private void OnDrawGizmos()
-    {
-        if (vertices == null)
-        {
-            return;
-        }
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            Gizmos.color = Color.black;
-            Gizmos.DrawSphere(vertices[i], 0.1f);
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(vertices[i], normals[i]);
-    }
-    }*/
+
 }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 public class NormalsVisualizer : Editor
 {
 
-   /* private Mesh mesh;
+   private Mesh mesh;
 
     void OnEnable()
     {
@@ -32,6 +32,6 @@ public class NormalsVisualizer : Editor
                 mesh.vertices[i] + mesh.normals[i]);
         }
     }
-    */
+    
    
 }
