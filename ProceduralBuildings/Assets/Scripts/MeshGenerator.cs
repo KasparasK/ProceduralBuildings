@@ -63,7 +63,6 @@ public class MeshGenerator {
             (ySize - 1) * (zSize - 1)) * 2;
 
         verticesCount = cornerVertices + edgeVertices + faceVertices;
-        Debug.Log(faceVertices);
         vertices = new Vertex[verticesCount];
       //  normals = new Vector3[vertices.Length];
 
@@ -89,7 +88,7 @@ public class MeshGenerator {
         mesh.vertices = finalVertices;
         CreateTriangles();
         mesh.triangles = triangles;
-        Debug.Log(mesh.normals.Length);
+     //   Debug.Log(mesh.normals.Length);
         mesh.normals = finalNormals.ToArray();
 
     //    mesh.RecalculateNormals();
@@ -100,7 +99,7 @@ public class MeshGenerator {
     {
         for (int i = 0; i < finalVertices.Length; i++)
         {
-          GameObject vert =  GameObject.Instantiate(vertextNumPref,canvas.transform);
+          GameObject vert =  Object.Instantiate(vertextNumPref,canvas.transform);
           vert.GetComponent<TMP_Text>().SetText(i.ToString());
           vert.transform.position = finalVertices[i];
         }
@@ -186,36 +185,49 @@ public class MeshGenerator {
     void CreateTriangles()
     {
         vertex = 0;
-        int ring = xSize * 2 + zSize * 2;
+        int ring = ((xSize+1) * 2) + ((zSize+1) * 2);
         int t = 0;
         t = GenerateSideTriangles(ring, t);
         t = GenerateTopAndBottomTriangles(ring, t);
-        t = TopPlaneRing(ring, t);
-        t = BotPlaneRing(ring, t);
+       // t = TopPlaneRing(ring, t);
+      //  t = BotPlaneRing(ring, t);
 
     }
 
     int GenerateSideTriangles(int ring,int t)
     {
-        triangles = new int[(xSize * ySize + xSize * zSize + ySize * zSize) * 12];
-        
-        for (int y = 0; y < ySize; y++, vertex++)
+
+        triangles = new int[
+          (zSize*ySize*12)+ (xSize * ySize * 12)+ (xSize * zSize * 12)
+        ];
+       // (xSize * ySize + xSize * zSize + ySize * zSize) * 12
+        for (int y = 0; y < ySize; y++)
         {
-            for (int x = 0; x <= ring - 2; x++, vertex++)
+            for (int i = 0; i < 2; i++)
             {
-        
-            SplitQuad(ref t, 
-                    vertex, 
-                    ring + vertex, 
-                    (vertex + 1 ), 
-                    ring + vertex + 1 );
+                for (int x = 0; x < xSize; x++, vertex++)
+                {
+                    SplitQuad(ref t,
+                        vertex,
+                        ring + vertex,
+                        (vertex + 1),
+                        ring + vertex + 1);
+                }
+
+                vertex++;
+
+                for (int z = 0; z < zSize; z++, vertex++)
+                {
+                    SplitQuad(ref t,
+                        vertex,
+                        ring + vertex,
+                        (vertex + 1),
+                        ring + vertex + 1);
+                }
+                vertex++;
+
             }
-            //paskuti quad reik jungti su pradiniais vertexais
-            SplitQuad( ref t,
-                vertex,
-                ring + vertex,
-                vertex + 1 - ring,
-                vertex + 1 );
+
         }
 
         return t;
@@ -224,33 +236,38 @@ public class MeshGenerator {
     int GenerateTopAndBottomTriangles(int ring, int t)
     {
 
-        int botVertStart = vertex = ((ySize + 1) * 2 * xSize) + ((ySize + 1) * 2 * zSize);
+        int topVertStart = vertex = ring * (ySize+1);//((ySize + 1) * 2 * xSize) + ((ySize + 1) * 2 * zSize);
 
         //virsus (flipinta viskas, palyginus su apacia)
-        for (int z = 0; z < (zSize - 2); z++)
+        for (int z = 0; z < (zSize); z++)
         {
-            for (int x = 0; x < (xSize - 2); x++)
+            for (int x = 0; x < (xSize); x++)
             {
-               // Debug.Log("0: " + (botVertStart + xSize - 1) + " 1: " + botVertStart + " 2: " + (botVertStart + xSize) + " 3: " + (botVertStart + 1));
-                SplitQuad(ref t, vertex + xSize, vertex + 1, vertex + xSize - 1,vertex);
-                vertex++;
-            }
-            vertex++;
-        }
-        vertex += ((zSize - 1)*(xSize-1)) - (vertex - botVertStart);
-        
-        //apacia
-        for (int z = 0; z < (zSize - 2); z++)
-        {
-            for (int x = 0; x < (xSize - 2); x++)
-            {
-                // Debug.Log("0: " + (botVertStart + xSize - 1) + " 1: " + botVertStart + " 2: " + (botVertStart + xSize) + " 3: " + (botVertStart + 1));
-                SplitQuad(ref t, vertex + xSize - 1, vertex, vertex + xSize, vertex + 1);
+                
+           //    Debug.Log("0: " + (vertex + xSize ) + " 1: " + (vertex + 1) + " 2: " + (vertex + xSize - 1) + " 3: " + (vertex));
+                //    SplitQuad(ref t, vertex + xSize, vertex + 1, vertex + xSize - 1,vertex);
+                    SplitQuad(ref t, vertex, vertex + xSize + 1, vertex + 1, vertex + xSize + 2);
+
                 vertex++;
             }
             vertex++;
         }
 
+        vertex += xSize + 1;//((zSize + 1)*(xSize+1));
+        //apacia
+        for (int z = 0; z < (zSize ); z++)
+        {
+            for (int x = 0; x < (xSize); x++)
+            {
+                // Debug.Log("0: " + (botVertStart + xSize - 1) + " 1: " + botVertStart + " 2: " + (botVertStart + xSize) + " 3: " + (botVertStart + 1));
+                // SplitQuad(ref t, vertex + xSize - 1, vertex, vertex + xSize, vertex + 1);
+                 SplitQuad(ref t, vertex + xSize +1, vertex, vertex + xSize +2, vertex + 1);
+
+                vertex++;
+            }
+            vertex++;
+        }
+        
 
         //-----------------------------------------
 
@@ -348,8 +365,11 @@ public class MeshGenerator {
         return t;
     }
 
-    void SplitQuad(ref int t, int v00, int v01, int v10, int v11 )
+    void SplitQuad(ref int t, int v00, int v01, int v10, int v11,bool debug = false )
     {
+        if(debug)
+            Debug.Log("0: " + v00 + " 1: " + v01 + " 2: " + v10 + " 3: " + v11);
+
         triangles[t] = v00;
         triangles[t + 1] = triangles[t + 4] = v01;
         triangles[t + 2] = triangles[t + 3] = v10;
