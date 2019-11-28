@@ -67,13 +67,33 @@ public class Roof : Segment
 
     void BendRoof(Vector3 size, Vector3 lastBaseSize, int ring, ref Vector3[] vertices)
     {
-        float xLowerPartOfTop = -(size.x + size.x / 2);
-        float heightenTheRoofTop =  xLowerPartOfTop / -2;
-        Vector3 posToAddRightSide = new Vector3(lastBaseSize.x/2- size.x,xLowerPartOfTop +heightenTheRoofTop, 0);
-        Vector3 posToAddLeftSide = new Vector3(lastBaseSize.x / 2, heightenTheRoofTop, 0);
+       
 
+        //pajundinti pirma zieda vertextu (apatini kairi stogo kampa)
+        int tempId = 0;
+
+        Vector3 posToAddRightSide = new Vector3( -size.x, 0, 0);
+        Vector3 posToAddLeftSide = new Vector3( -size.x,  size.x / 2, 0);
+
+        AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
+
+       for (int i = 0; i < ring / 2; i++)
+        {
+            tempId++;
+            AlterVertexPosition(ref vertices[tempId], posToAddRightSide);
+        }
+        for (int i = 0; i < (ring / 2) - 1; i++)
+        {
+            tempId++;
+            AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
+
+        }
         //move middle vertices to right by half width
-        int tempId = ring;
+        float xLowerPartOfTop = -(size.x + size.x / 2);
+        float heightenTheRoofTop = xLowerPartOfTop / -2;
+        posToAddRightSide = new Vector3(lastBaseSize.x / 2 - size.x, xLowerPartOfTop + heightenTheRoofTop, 0);
+        posToAddLeftSide = new Vector3(lastBaseSize.x / 2, heightenTheRoofTop, 0);
+        tempId = ring;
         AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
      
         for (int i = 0; i < ring/2; i++)
@@ -90,8 +110,8 @@ public class Roof : Segment
         //move top most vertices to right by all width and down by all height
         tempId = ring*2;
 
-        posToAddRightSide = new Vector3(lastBaseSize.x - (size.x*2), -vertices[tempId].y, 0);
-        posToAddLeftSide = new Vector3(lastBaseSize.x, -vertices[tempId].y, 0);
+        posToAddRightSide = new Vector3(lastBaseSize.x - size.x , -vertices[tempId].y, 0);
+        posToAddLeftSide = new Vector3(lastBaseSize.x + size.x, -vertices[tempId].y+size.x/2, 0);
 
         AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
 
@@ -111,6 +131,15 @@ public class Roof : Segment
         tempId = ring * 3;
       
       
+        for (int i = 0; i < 2; i++)
+        {
+            AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
+            tempId++;
+            AlterVertexPosition(ref vertices[tempId], posToAddRightSide);
+            tempId++;
+        }
+        posToAddRightSide = new Vector3(-size.x, 0, 0);
+        posToAddLeftSide = new Vector3(-size.x, size.x / 2, 0);
         for (int i = 0; i < 2; i++)
         {
             AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
