@@ -17,20 +17,28 @@ public class GeneratorController : MonoBehaviour
     public GameObject canvasPref;
     public GameObject vertexNuPref;
 
-    private GameObject cube;
+    public GameObject parentObj;
+
+    public VertexVisualiser VertexVisualiser;
 
     public int x, y, z;
+
+
     public void Generate()
     {
-        if(canvas != null)
-            DestroyImmediate(canvas);
-        canvas = Instantiate(canvasPref, Vector3.zero, Quaternion.identity);
+       
 
-        if(cube != null)
-            DestroyImmediate(cube);
+        if(parentObj != null)
+            DestroyImmediate(parentObj);
 
-        MeshGenerator meshGenerator = new MeshGenerator();
+        parentObj = new GameObject();
+        parentObj.transform.position= Vector3.zero;
+        parentObj.name = "Building";
 
-        cube = meshGenerator.GenerateRectangle(baseMaterial, x, y, z,vertexNuPref,canvas);
+        Building building = new Building(5,this, VertexVisualiser);
+
     }
+
+
+
 }

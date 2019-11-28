@@ -1,4 +1,6 @@
-﻿using Boo.Lang;
+﻿using System;
+using System.Linq;
+using Boo.Lang;
 using UnityEngine;
 using TMPro;
 public class Vertex
@@ -13,24 +15,6 @@ public class Vertex
     }
 }
 
-enum RactangleParts
-{
-    BOT_LEFT_DOWN,
-    BOT_RIGHT_DOWN,
-    BOT_LEFT_UP,
-    BOT_RIGHT_UP,
-
-    TOP_LEFT_DOWN,
-    TOP_RIGHT_DOWN,
-    TOP_LEFT_UP,
-    TOP_RIGHT_UP,
-
-    LEFT_DOWN_SIDE,
-    LEFT_UP_SIDE,
-    RIGHT_DOWN_SIDE,
-    RIGHT_UP_SIDE,
-}
-
 public class MeshGenerator {
 
     int xSize, ySize, zSize;
@@ -39,21 +23,20 @@ public class MeshGenerator {
     private Vertex[] vertices;
     int[] triangles;
     int vertex;
- //  private Vector3[] normals;
     private int verticesCount;
 
-    public GameObject GenerateRectangle(Material material,int _xSize, int _ySize, int _zSize, GameObject vertextNumPref,GameObject canvas)
+    public GameObject GenerateBaseRectangle(Material material,Vector3Int size,string name)
     {
-        xSize = _xSize;
-        ySize = _ySize;
-        zSize = _zSize;
+        xSize = size.x;
+        ySize = size.y;
+        zSize = size.z;
 
-        GameObject newMesh = new GameObject();
-        newMesh.AddComponent<MeshFilter>().mesh = mesh = new Mesh();
-        newMesh.AddComponent<MeshRenderer>().sharedMaterial= material;
+        GameObject baseRectangle = new GameObject();
+        baseRectangle.AddComponent<MeshFilter>().mesh = mesh = new Mesh();
+        baseRectangle.AddComponent<MeshRenderer>().sharedMaterial= material;
 
-        mesh.name = "ProceduralRectangle";
-        newMesh.name = "ProceduralRectangle";
+        mesh.name = name;
+        baseRectangle.name = name;
 
         int cornerVertices = 8*3;
         int edgeVertices = (xSize + ySize + zSize - 3) * 8;
@@ -64,15 +47,13 @@ public class MeshGenerator {
 
         verticesCount = cornerVertices + edgeVertices + faceVertices;
         vertices = new Vertex[verticesCount];
-      //  normals = new Vector3[vertices.Length];
 
-        CreateMesh(vertextNumPref,canvas);
-        //Debug.Log("edgeVertices: " + cornerVertices + " edgeVertices: " + edgeVertices + " faceVertices: " + faceVertices);
+        CreateMesh();
 
-        return newMesh;
+        return baseRectangle;
     }
 
-    void CreateMesh(GameObject vertextNumPref, GameObject canvas)
+    void CreateMesh()
     {
         GenerateVertices();
       
@@ -83,26 +64,12 @@ public class MeshGenerator {
             finalVertices[i] = vertices[i].pos;
             finalNormals.AddRange(vertices[i].normals);
         }
-        VisualiseVertices(finalVertices,vertextNumPref, canvas);
 
         mesh.vertices = finalVertices;
         CreateTriangles();
         mesh.triangles = triangles;
-     //   Debug.Log(mesh.normals.Length);
-        mesh.normals = finalNormals.ToArray();
 
-    //    mesh.RecalculateNormals();
-    }
-
-
-    void VisualiseVertices(Vector3[] finalVertices, GameObject vertextNumPref, GameObject canvas)
-    {
-        for (int i = 0; i < finalVertices.Length; i++)
-        {
-          GameObject vert =  Object.Instantiate(vertextNumPref,canvas.transform);
-          vert.GetComponent<TMP_Text>().SetText(i.ToString());
-          vert.transform.position = finalVertices[i];
-        }
+        mesh.RecalculateNormals();
     }
 
     void GenerateVertices()
@@ -121,7 +88,6 @@ public class MeshGenerator {
                         SetVertex(v, x, y, 0,new List<Vector3>
                         {
                             Vector3.one
-                            //new Vector3(1,0,0), new Vector3(0, 1, 0), new Vector3(0, 0, 1)
                         });
                         break;
                     default:
@@ -129,24 +95,19 @@ public class MeshGenerator {
                         break;
 
                 }
-                //   Debug.Log("[1] "+v);
 
             }
             for (int z = 0; z <= zSize; z++, v++)
             {
-              //  Debug.Log("[2] " + v);
-
                 SetVertex(v, xSize, y, z, new List<Vector3> { Vector3.one });
             }
             for (int x = xSize; x >= 0; x--, v++)
             {
-            //    Debug.Log("[3] " + v);
 
                 SetVertex(v, x, y, zSize, new List<Vector3> { Vector3.one });
             }
             for (int z = zSize; z >= 0; z--, v++)
             {
-             //   Debug.Log("[4] " + v);
 
                 SetVertex(v, 0, y, z, new List<Vector3> { Vector3.one });
             }
@@ -159,7 +120,6 @@ public class MeshGenerator {
             {
                 for (int x = 0; x <= xSize; x++, v++)
                 {
-                 //   Debug.Log("[5]+ " + v);
 
                     SetVertex(v, x, y, z, new List<Vector3> { Vector3.one });
                 }
@@ -189,8 +149,6 @@ public class MeshGenerator {
         int t = 0;
         t = GenerateSideTriangles(ring, t);
         t = GenerateTopAndBottomTriangles(ring, t);
-       // t = TopPlaneRing(ring, t);
-      //  t = BotPlaneRing(ring, t);
 
     }
 
@@ -200,7 +158,6 @@ public class MeshGenerator {
         triangles = new int[
           (zSize*ySize*12)+ (xSize * ySize * 12)+ (xSize * zSize * 12)
         ];
-       // (xSize * ySize + xSize * zSize + ySize * zSize) * 12
         for (int y = 0; y < ySize; y++)
         {
             for (int i = 0; i < 2; i++)
@@ -236,16 +193,13 @@ public class MeshGenerator {
     int GenerateTopAndBottomTriangles(int ring, int t)
     {
 
-        int topVertStart = vertex = ring * (ySize+1);//((ySize + 1) * 2 * xSize) + ((ySize + 1) * 2 * zSize);
+        vertex = ring * (ySize+1);
 
         //virsus (flipinta viskas, palyginus su apacia)
         for (int z = 0; z < (zSize); z++)
         {
             for (int x = 0; x < (xSize); x++)
             {
-                
-           //    Debug.Log("0: " + (vertex + xSize ) + " 1: " + (vertex + 1) + " 2: " + (vertex + xSize - 1) + " 3: " + (vertex));
-                //    SplitQuad(ref t, vertex + xSize, vertex + 1, vertex + xSize - 1,vertex);
                     SplitQuad(ref t, vertex, vertex + xSize + 1, vertex + 1, vertex + xSize + 2);
 
                 vertex++;
@@ -253,14 +207,12 @@ public class MeshGenerator {
             vertex++;
         }
 
-        vertex += xSize + 1;//((zSize + 1)*(xSize+1));
+        vertex += xSize + 1;
         //apacia
         for (int z = 0; z < (zSize ); z++)
         {
             for (int x = 0; x < (xSize); x++)
             {
-                // Debug.Log("0: " + (botVertStart + xSize - 1) + " 1: " + botVertStart + " 2: " + (botVertStart + xSize) + " 3: " + (botVertStart + 1));
-                // SplitQuad(ref t, vertex + xSize - 1, vertex, vertex + xSize, vertex + 1);
                  SplitQuad(ref t, vertex + xSize +1, vertex, vertex + xSize +2, vertex + 1);
 
                 vertex++;
@@ -276,95 +228,6 @@ public class MeshGenerator {
 
     }
 
-    int TopPlaneRing(int ring, int t)
-    {
-        int v = ring * ySize;
-
-          for (int x = 0; x < xSize - 1; x++, v++)
-          {
-              SplitQuad(ref t, v, v + ring - 1,v + 1, v + ring);
-   
-          }
-
-          SplitQuad(ref t, v, v + ring - 1,v + 1, v + 2);
-     
-          //-----------------------------------------
-
-          int vMin = ring * (ySize + 1) - 1;
-          int vMid = vMin + 1;
-          int vMax = v + 2;
-
-          for (int z = 1; z < zSize - 1; z++, vMin--, vMid++, vMax++)
-          {
-              SplitQuad(ref t, vMin, vMin-1, vMid, vMid + xSize - 1);
-              
-
-              vMid += xSize - 2;
-             // Debug.Log(" vMin: " + vMin + " vMid: " + vMid + " vMax: " + vMax);
-
-              SplitQuad(ref t, vMid , vMid + xSize - 1, vMax , vMax +1);
-          
-          }
-          //-----------------------------------------
-          int vTop = vMin - 2;
-          // Debug.Log("vTop: " + vTop + " vMin: " + vMin + " vMid: " + vMid + " vMax: " + vMax);
-
-          SplitQuad(ref t, vMin, vMin - 1, vMid, vTop);
-        
-
-          for (int x = 1; x < xSize - 1; x++, vTop--, vMid++)
-          {
-              SplitQuad(ref t, vMid, vTop, vMid + 1, vTop - 1);
-        
-
-          }
-          SplitQuad(ref t, vMid, vTop, vTop - 2, vTop - 1);
-    
-
-          //-----------------------------------------
-
-          return t;
-    }
-
-    int BotPlaneRing(int ring, int t)
-    {
-        int v = 1;
-        int vMid = vertices.Length - (xSize - 1) * (zSize - 1);
-        // virsutine eile
-        SplitQuad(ref t, ring - 1, 0, vMid, 1);
-        for (int x = 1; x < xSize - 1; x++, v++, vMid++)
-        {
-            SplitQuad(ref t, vMid, v, vMid+1, v + 1);
-        }
-        SplitQuad(ref t, vMid, v , v+2, v + 1);
-        //-----------------------------------------
-
-        int vMin = ring - 2;
-        vMid -= xSize - 2;
-        int vMax = v + 2;
-        for (int z = 1; z < zSize - 1; z++, vMin--, vMid++, vMax++)
-        {
-            SplitQuad(ref t, vMin, vMin + 1, vMid+xSize-1, vMid);
-            vMid += (xSize - 2);
-            SplitQuad(ref t, vMid + xSize - 1, vMid, vMax+1, vMax);
-        }
-        //-----------------------------------------
-
-        int vTop = vMin - 1;
-
-        SplitQuad(ref t, vMin, vMin+1, vMin-1, vMid);
-        for (int x = 1; x < xSize - 1; x++, vTop--, vMid++)
-        {
-            SplitQuad(ref t, vTop, vMid, vTop-1, vMid + 1);
-        }
-       // Debug.Log("vMin: " + vMin + " vMid: " + vMid + " vMax: " + vMax + " vTop: " + vTop);
-
-        SplitQuad(ref t, vTop, vMid, vTop - 1, vTop - 2);
-        //-----------------------------------------
-
-        return t;
-    }
-
     void SplitQuad(ref int t, int v00, int v01, int v10, int v11,bool debug = false )
     {
         if(debug)
@@ -378,5 +241,42 @@ public class MeshGenerator {
         t += 6; 
     }
 
+
+    public GameObject RemoveVerticesAndTriangles(GameObject obj, int removeFrom, int removeTo)
+    {
+
+        MeshFilter meshFilter = obj.GetComponent<MeshFilter>();
+        Mesh newMesh = new Mesh();
+        Mesh oldMesh = meshFilter.sharedMesh;
+
+        List<Vector3> vertices = new List<Vector3>(oldMesh.vertices);
+        List<int> tris = new List<int>(oldMesh.triangles);
+    
+
+        //pradžioj ištrinti nereikalingas vertexu nuorodas taip panaikinant trikampius
+        for (int i = removeFrom; i <= removeTo; i++)
+        {
+            tris.RemoveAll(x => x == i);
+        }
+        //sumažinti vertexu masyvo nuorodas, kadangi trikampių masyvas sumažejo
+        for (int i = 0; i < tris.Count; i++)
+        {
+            if (tris[i] > removeTo)
+                tris[i] -= removeTo - removeFrom + 1;
+        }
+        //ištrinti nebenaudojamus vertexus
+        for (int i = removeTo; i >= removeFrom; i--)
+        {
+            vertices.RemoveAt(i);
+        }
+
+        newMesh.vertices = vertices.ToArray();
+        newMesh.triangles = tris.ToArray();
+        newMesh.RecalculateNormals();
+        meshFilter.sharedMesh = newMesh;
+
+        return obj;
+    }
 }
+
 
