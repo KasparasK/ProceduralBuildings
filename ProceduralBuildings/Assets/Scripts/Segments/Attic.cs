@@ -7,9 +7,6 @@ public class Attic : Segment
 {
     private const string name = "attic";
 
-    private const float minRoofHeight = 1;
-    private const float maxRoofHeight = 2.5f;
-
     public Attic(Material material, Base parentBase, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
@@ -55,7 +52,7 @@ public class Attic : Segment
 
         Vector3 finalSize = new Vector3(
             lastFloorSize.x,
-            UnityEngine.Random.Range(minRoofHeight, maxRoofHeight),
+            UnityEngine.Random.Range(lastFloorSize.x/2.5f, lastFloorSize.x+0.3f),
             lastFloorSize.z
         );
 

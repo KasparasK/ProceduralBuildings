@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class VertexVisualiser : MonoBehaviour
@@ -24,4 +25,43 @@ public class VertexVisualiser : MonoBehaviour
           vert.transform.localPosition = finalVertices[i];
         }
     }
+
+
+
 }
+/*
+[CustomEditor(typeof(MeshFilter))]
+public class VertexVisualiser : Editor
+{
+
+       private Mesh mesh;
+
+        void OnEnable()
+        {
+            MeshFilter mf = target as MeshFilter;
+            if (mf != null)
+            {
+                mesh = mf.sharedMesh;
+            }
+        }
+
+        void OnSceneGUI()
+        {
+            if (mesh == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < mesh.vertexCount; i++)
+            {
+                Handles.matrix = (target as MeshFilter).transform.localToWorldMatrix;
+                Handles.color = Color.yellow;
+                Handles.DrawLine(
+                    mesh.vertices[i],
+                    mesh.vertices[i] + mesh.normals[i]);
+            }
+        }
+        
+
+}
+*/

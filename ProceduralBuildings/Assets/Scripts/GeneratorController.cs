@@ -12,17 +12,13 @@ public class GeneratorController : MonoBehaviour
     public Material glassMaterial;
     public Material doorMaterial;
     public Material roofMaterial;
+    public Material segmentsMaterial;
 
-    public GameObject canvas;
-    public GameObject canvasPref;
-    public GameObject vertexNuPref;
+    public bool leftFirewall, rightFirewall, backFirewall;
 
     public GameObject parentObj;
 
     public VertexVisualiser VertexVisualiser;
-
-    public int x, y, z;
-
 
     public void Generate()
     {

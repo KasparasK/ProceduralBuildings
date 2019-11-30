@@ -241,6 +241,27 @@ public class MeshGenerator {
         t += 6; 
     }
 
+    public GameObject GenerateBasePlane(Material material, Vector2Int size, string name)
+    {
+        xSize = size.x;
+        ySize = size.y;
+        zSize = 0;
+
+        GameObject basePlane = new GameObject();
+        basePlane.AddComponent<MeshFilter>().mesh = mesh = new Mesh();
+        basePlane.AddComponent<MeshRenderer>().sharedMaterial = material;
+
+        mesh.name = name;
+        basePlane.name = name;
+
+        verticesCount = (xSize+1)*(ySize+1);
+        vertices = new Vertex[verticesCount];
+
+        CreateMesh();
+
+        return basePlane;
+    }
+
 
     public GameObject RemoveVerticesAndTriangles(GameObject obj, int removeFrom, int removeTo)
     {

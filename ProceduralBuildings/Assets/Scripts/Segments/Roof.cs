@@ -65,15 +65,13 @@ public class Roof : Segment
         return  new Vector3(GetThicknessOfRoof(),y,z);
     }
 
-    void BendRoof(Vector3 size, Vector3 lastBaseSize, int ring, ref Vector3[] vertices)
+    void BendRoof(Vector3 goalSize, Vector3 lastBaseSize, int ring, ref Vector3[] vertices)
     {
-       
-
-        //pajundinti pirma zieda vertextu (apatini kairi stogo kampa)
+        //pajundinti pirma zieda vertexu (apatini kairi stogo kampa)
         int tempId = 0;
 
-        Vector3 posToAddRightSide = new Vector3( -size.x, 0, 0);
-        Vector3 posToAddLeftSide = new Vector3( -size.x,  size.x / 2, 0);
+        Vector3 posToAddRightSide = new Vector3( -goalSize.x, 0, 0);
+        Vector3 posToAddLeftSide = new Vector3( -goalSize.x,  goalSize.x / 2, 0);
 
         AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
 
@@ -89,9 +87,9 @@ public class Roof : Segment
 
         }
         //move middle vertices to right by half width
-        float xLowerPartOfTop = -(size.x + size.x / 2);
+        float xLowerPartOfTop = -(goalSize.x + goalSize.x / 2);
         float heightenTheRoofTop = xLowerPartOfTop / -2;
-        posToAddRightSide = new Vector3(lastBaseSize.x / 2 - size.x, xLowerPartOfTop + heightenTheRoofTop, 0);
+        posToAddRightSide = new Vector3(lastBaseSize.x / 2 - goalSize.x, xLowerPartOfTop + heightenTheRoofTop, 0);
         posToAddLeftSide = new Vector3(lastBaseSize.x / 2, heightenTheRoofTop, 0);
         tempId = ring;
         AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
@@ -110,8 +108,8 @@ public class Roof : Segment
         //move top most vertices to right by all width and down by all height
         tempId = ring*2;
 
-        posToAddRightSide = new Vector3(lastBaseSize.x - size.x , -vertices[tempId].y, 0);
-        posToAddLeftSide = new Vector3(lastBaseSize.x + size.x, -vertices[tempId].y+size.x/2, 0);
+        posToAddRightSide = new Vector3(lastBaseSize.x - goalSize.x , -vertices[tempId].y, 0);
+        posToAddLeftSide = new Vector3(lastBaseSize.x + goalSize.x, -vertices[tempId].y+goalSize.x/2, 0);
 
         AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
 
@@ -126,11 +124,8 @@ public class Roof : Segment
             AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
 
         }
-
         //top plane
         tempId = ring * 3;
-      
-      
         for (int i = 0; i < 2; i++)
         {
             AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);
@@ -138,8 +133,9 @@ public class Roof : Segment
             AlterVertexPosition(ref vertices[tempId], posToAddRightSide);
             tempId++;
         }
-        posToAddRightSide = new Vector3(-size.x, 0, 0);
-        posToAddLeftSide = new Vector3(-size.x, size.x / 2, 0);
+        //bot plane
+        posToAddRightSide = new Vector3(-goalSize.x, 0, 0);
+        posToAddLeftSide = new Vector3(-goalSize.x, goalSize.x / 2, 0);
         for (int i = 0; i < 2; i++)
         {
             AlterVertexPosition(ref vertices[tempId], posToAddLeftSide);

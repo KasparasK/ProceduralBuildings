@@ -30,16 +30,21 @@ public class Segment
         meshGenerator = new MeshGenerator();
         obj = meshGenerator.GenerateBaseRectangle(material, size, name);
     }
-  /*.      x--------x
-   *.     /|       /|
-   *.    / |      / |
-   *.   /  x-----/--x
-   *.  /  /     /  /       
-   *  x--------x  /
-   *  | /      | /
-   *  |/       |/
-   *  x--------x
-   */
+    protected void GenerateBasePlane(Material material, Vector2Int size, string name)
+    {
+        meshGenerator = new MeshGenerator();
+        obj = meshGenerator.GenerateBasePlane(material, size, name);
+    }
+    /*.      x--------x
+     *.     /|       /|
+     *.    / |      / |
+     *.   /  x-----/--x
+     *.  /  /     /  /       
+     *  x--------x  /
+     *  | /      | /
+     *  |/       |/
+     *  x--------x
+     */
     //used just to evenly change cube dimensions
     protected void AlterCubeSize(Vector3 goalSize, Vector3Int baseCubeSize, ref Vector3[] vertices)
     {
