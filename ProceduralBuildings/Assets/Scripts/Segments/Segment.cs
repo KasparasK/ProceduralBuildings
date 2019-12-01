@@ -24,6 +24,10 @@ public class Segment
     {
         vertex += posToAdd;
     }
+    protected void SetVertexPosition(ref Vector3 vertex, Vector3 newPos)
+    {
+        vertex = newPos;
+    }
 
     protected void GenerateBaseCube(Material material, Vector3Int size,string name)
     {
@@ -129,7 +133,6 @@ public class Segment
     {
         obj = meshGenerator.RemoveVerticesAndTriangles(obj, removeFrom, removeTo);
     }
-
     protected void VisualiseVertices(Vector3[] vertices)
     {
         if (verticesDebugger != null)

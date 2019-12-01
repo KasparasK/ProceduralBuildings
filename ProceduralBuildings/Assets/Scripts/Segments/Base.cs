@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,6 +9,11 @@ public class Base : Segment
 
     private readonly Vector3 addToLastSize = new Vector3(0.7f,0.3f,0.7f);
     private readonly Vector3 minBaseSize = new Vector3(3, 1, 3.5f);
+
+    private const float sideDecorWidth = 0.2f;
+    private const float sideDecorDepth = 0.07f;
+
+    public float addedDecorWidth;
 
     public OpeningStyle windowStyle;
     public OpeningStyle doorStyle;
@@ -41,14 +47,48 @@ public class Base : Segment
 
         Vector3[] vertices = mesh.vertices;
         AlterCubeSize(finalSize, baseCubeSize, ref vertices);
-
-        mesh.vertices = vertices;
         obj.transform.localPosition = pos;
 
-        int removeFrom = CalculateRingSize() * (baseCubeSize.y + 1);
-        int removeTo = removeFrom + ((baseCubeSize.x + 1) * (baseCubeSize.z + 1)) - 1;
-        RemoveVerticesAndTriangles(removeFrom, removeTo);
+        AddSideDecor(ref vertices,backFirewall,leftFirewall,rightFirewall,lastBase);
+        mesh.vertices = vertices;
+        mesh.uv = UnwarpUVs(vertices);
 
+        /*  int removeFrom = CalculateRingSize() * (baseCubeSize.y + 1);
+          int removeTo = removeFrom + ((baseCubeSize.x + 1) * (baseCubeSize.z + 1)) - 1;
+          RemoveVerticesAndTriangles(removeFrom, removeTo);
+          */
+    }
+
+    public Vector2[] UnwarpUVs(Vector3[] vertices)
+    {
+        float imageSize = 512;
+        float colorSize = 32;
+        float offset = colorSize / 2;
+        Vector2 wallsColor = new Vector2(((colorSize * 2)-offset )/ imageSize, colorSize-offset / imageSize);
+        Vector2 pillarsColor = new Vector2((colorSize-offset) / imageSize, colorSize-offset / imageSize);
+        bool pillarColor = false;
+        Vector2[] uvs = new Vector2[vertices.Length];
+         Debug.Log(wallsColor.x+" "+wallsColor.y);
+        uvs[0] = pillarsColor;
+        uvs[1] = pillarsColor;
+        int increment = 2;
+        int i = 2;
+        while (i < vertices.Length-((baseCubeSize.x+1)* (baseCubeSize.z + 1)*2))
+        {
+            for (int j = 0; j < increment; j++)
+            {
+                if(i+j >= vertices.Length)
+                    break;
+                
+                uvs[i+j] = pillarColor ? pillarsColor : wallsColor;
+            }
+
+            i += increment;
+            increment = !pillarColor? 4 : 2;
+            pillarColor = !pillarColor;
+        }
+
+        return uvs;
     }
 
     Vector3 GetFinalPosition(Base lastBase, Vector3 currSize, bool leftFirewall, bool rightFirewall, bool backFirewall)
@@ -70,11 +110,6 @@ public class Base : Segment
     Vector3 GetFinalSize(Vector3 lastFloorSize, bool leftFirewall, bool rightFirewall, bool backFirewall)
     {
         Vector3 tempAddToLast = addToLastSize;
-
-    /*    float x = Random.Range(minSize.x, maxSize.x);
-        float y = Random.Range(minSize.y, maxSize.y);
-        float z = Random.Range(minSize.z, maxSize.z);*/
-
 
         if (leftFirewall && rightFirewall)
         {
@@ -100,6 +135,259 @@ public class Base : Segment
             );
 
         return finalSize;
+
+    }
+
+    void AddSideDecor(ref Vector3[] vertices, bool backFirewall, bool leftFirewall, bool rightFirewall,
+        Base lastBase = null)
+    {
+        if (lastBase != null)
+        {
+            float diff = finalSize.z - lastBase.finalSize.z;
+            if (backFirewall)
+            {
+                addedDecorWidth = sideDecorWidth > diff ? 0 : (diff);
+            }
+            else
+            {
+                addedDecorWidth = sideDecorWidth > diff ? 0 : (diff) / 2;
+            }
+
+            if (leftFirewall && rightFirewall)
+                addedDecorWidth += lastBase.addedDecorWidth;
+            else
+                addedDecorWidth = 0;
+
+        }
+        else
+            addedDecorWidth = 0;
+
+        int ring = CalculateRingSize();
+        int tempId = 0;
+        //front down
+
+        for (int j = 0; j <= baseCubeSize.y; j++)
+        {
+            tempId = ring * j;
+
+            Vector3 pos = new Vector3(-sideDecorDepth, 0, -sideDecorDepth);
+            AlterVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(sideDecorWidth - sideDecorDepth, vertices[tempId].y, -sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(sideDecorWidth - sideDecorDepth, vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId = (ring * j) + baseCubeSize.x - 2;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                vertices[tempId].z - sideDecorDepth);
+            // SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            //first corner
+            pos = new Vector3(+sideDecorDepth, 0, -sideDecorDepth);
+
+            for (int i = 0; i < 2; i++)
+            {
+                AlterVertexPosition(ref vertices[tempId], pos);
+                tempId++;
+            }
+
+            //right down
+            pos = new Vector3(vertices[tempId].x + sideDecorDepth, vertices[tempId].y,
+                sideDecorWidth + addedDecorWidth - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(vertices[tempId].x, vertices[tempId].y,
+                sideDecorWidth + addedDecorWidth - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId = (ring * j) + baseCubeSize.x + baseCubeSize.z - 1;
+            pos = new Vector3(vertices[tempId].x, vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(vertices[tempId].x + sideDecorDepth, vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(+sideDecorDepth, 0, +sideDecorDepth);
+            //second corner
+            for (int i = 0; i < 2; i++)
+            {
+                AlterVertexPosition(ref vertices[tempId], pos);
+                tempId++;
+            }
+
+            //back down
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                vertices[tempId].z + sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId = (ring * j) + baseCubeSize.x - 2;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                vertices[tempId].z - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId = (ring * j) + baseCubeSize.x * 2 + baseCubeSize.z;
+            pos = new Vector3(0 + (sideDecorWidth - sideDecorDepth), vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(0 + (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                vertices[tempId].z + sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            //third corner
+            pos = new Vector3(-sideDecorDepth, 0, +sideDecorDepth);
+
+            for (int i = 0; i < 2; i++)
+            {
+                AlterVertexPosition(ref vertices[tempId], pos);
+                tempId++;
+            }
+
+            //left down
+            pos = new Vector3(-sideDecorDepth, vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(0, vertices[tempId].y, finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId = (ring * j) + ring - 3;
+            pos = new Vector3(0, vertices[tempId].y, (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(-sideDecorDepth, vertices[tempId].y, (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(-sideDecorDepth, 0, -sideDecorDepth);
+
+            //forth corner
+            AlterVertexPosition(ref vertices[tempId], pos);
+        }
+        for (int j = 0; j < 2; j++)
+        {
+            //pirma eile
+            tempId++; // = vertices.Length+1 - (baseCubeSize.x + 1) * (baseCubeSize.z + 1);
+            pos = new Vector3(-sideDecorDepth, 0, -sideDecorDepth);
+            AlterVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(sideDecorWidth - sideDecorDepth, vertices[tempId].y, -sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(sideDecorWidth - sideDecorDepth, vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId += baseCubeSize.x - 4;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                vertices[tempId].z - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(+sideDecorDepth, 0, -sideDecorDepth);
+            AlterVertexPosition(ref vertices[tempId], pos);
+            //amtra eile
+            tempId++;
+            pos = new Vector3(-sideDecorDepth, vertices[tempId].y, (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3((sideDecorWidth - sideDecorDepth), vertices[tempId].y, sideDecorWidth - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId += baseCubeSize.x - 4;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                sideDecorWidth - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(vertices[tempId].x + sideDecorDepth, vertices[tempId].y,
+                sideDecorWidth + addedDecorWidth - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            //trecia eile
+            tempId++;
+            pos = new Vector3(0, vertices[tempId].y, (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId += baseCubeSize.x - 2;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                sideDecorWidth - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(vertices[tempId].x, vertices[tempId].y, sideDecorWidth + addedDecorWidth - sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            //trecia nuo galo (ketvirta) eile TOLESNIS KODAS NEPRITAIKYTAS KITOKIAM NEI 5x5 KUBUI
+            tempId++;
+            pos = new Vector3(0, vertices[tempId].y, finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3((sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId += baseCubeSize.x - 2;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(vertices[tempId].x, vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            //penkta eile
+            tempId++;
+            pos = new Vector3(-sideDecorDepth, vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3((sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            SetVertexPosition(ref vertices[tempId], pos);
+
+            tempId += baseCubeSize.x - 4;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+
+            pos = new Vector3(vertices[tempId].x + sideDecorDepth, vertices[tempId].y,
+                finalSize.z - (sideDecorWidth + addedDecorWidth - sideDecorDepth));
+            SetVertexPosition(ref vertices[tempId], pos);
+            //paskutine eile
+            tempId++;
+            pos = new Vector3(-sideDecorDepth, 0, +sideDecorDepth);
+            AlterVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(0 + (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                vertices[tempId].z + sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(0 + (sideDecorWidth - sideDecorDepth), vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId += baseCubeSize.x - 4;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y, vertices[tempId].z);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(finalSize.x - (sideDecorWidth - sideDecorDepth), vertices[tempId].y,
+                vertices[tempId].z + sideDecorDepth);
+            SetVertexPosition(ref vertices[tempId], pos);
+            tempId++;
+            pos = new Vector3(sideDecorDepth, 0, +sideDecorDepth);
+            AlterVertexPosition(ref vertices[tempId], pos);
+            
+        }
+       
 
     }
 

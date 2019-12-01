@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using Boo.Lang;
 using UnityEngine;
 using TMPro;
+using UnityEditor;
+
 public class Vertex
 {
     public Vector3 pos;
@@ -68,9 +71,10 @@ public class MeshGenerator {
         mesh.vertices = finalVertices;
         CreateTriangles();
         mesh.triangles = triangles;
-
         mesh.RecalculateNormals();
     }
+
+
 
     void GenerateVertices()
     {
@@ -215,7 +219,7 @@ public class MeshGenerator {
             {
                  SplitQuad(ref t, vertex + xSize +1, vertex, vertex + xSize +2, vertex + 1);
 
-                vertex++;
+                 vertex++;
             }
             vertex++;
         }
