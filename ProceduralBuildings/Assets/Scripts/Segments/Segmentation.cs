@@ -13,7 +13,17 @@ public class Segmentation : Segment
 
         GenerateSegements(parentObj, winSize, material, vertSegPositions, horSegPositions, segmentDimensions);
     }
+    protected override Vector2[] GenerateUVs(int verticesLength)
+    {
+        Vector2[] uvs = new Vector2[verticesLength];
+        Vector2 color = GetColorPosition(TextureColorIDs.darkBrown);
+        for (int i = 0; i < verticesLength; i++)
+        {
+            uvs[i] = color;
+        }
 
+        return uvs;
+    }
     void GenerateSegements(GameObject parentObj, Vector3 winSize, Material material, List<Vector3> vertSegPositions, List<Vector3> horSegPositions,Vector3 segmentDimensions)
     {
         List<GameObject> objs = new List<GameObject>();
@@ -31,10 +41,13 @@ public class Segmentation : Segment
 
             mesh.vertices = vertices;
             obj.transform.parent = parentObj.transform;
+            mesh.uv = GenerateUVs(vertices.Length);
             obj.transform.localPosition = horSegPositions[i];
             obj.transform.localRotation = Quaternion.Euler(Vector3.zero);
             objs.Add(obj);
         }
+
+       
 
         for (int i = 0; i < vertSegPositions.Count; i++)
         {
@@ -49,6 +62,8 @@ public class Segmentation : Segment
 
             mesh.vertices = vertices;
             obj.transform.parent = parentObj.transform;
+            mesh.uv = GenerateUVs(vertices.Length);
+
             obj.transform.localPosition = vertSegPositions[i];
             obj.transform.localRotation = Quaternion.Euler(Vector3.zero);
 

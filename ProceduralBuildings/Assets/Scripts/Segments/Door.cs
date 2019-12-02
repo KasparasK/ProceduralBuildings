@@ -15,4 +15,9 @@ public class Door : Segment
     {
         
     }
+
+    protected override Vector2[] GenerateUVs(int verticesLength)
+    {
+        throw new System.NotImplementedException();
+    }
 }

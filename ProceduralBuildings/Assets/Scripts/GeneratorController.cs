@@ -7,12 +7,7 @@ public class GeneratorController : MonoBehaviour
 {
     public string path;
 
-    public Material baseMaterial;
-    public Material windowMaterial;
-    public Material glassMaterial;
-    public Material doorMaterial;
-    public Material roofMaterial;
-    public Material segmentsMaterial;
+    public Material mainMaterial;
 
     public bool leftFirewall, rightFirewall, backFirewall;
 

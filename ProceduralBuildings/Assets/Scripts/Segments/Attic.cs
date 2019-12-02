@@ -31,11 +31,26 @@ public class Attic : Segment
         int removeFrom = CalculateRingSize() * (baseCubeSize.y + 1);
         int removeTo = removeFrom + ((baseCubeSize.x + 1) * (baseCubeSize.z + 1)) - 1;
         RemoveVerticesAndTriangles(removeFrom, removeTo);
+        mesh = obj.GetComponent<MeshFilter>().sharedMesh;
+        vertices = mesh.vertices;
+        mesh.uv = GenerateUVs(vertices.Length);
 
-
-      //  VisualiseVertices(mesh.vertices);
+        //  VisualiseVertices(mesh.vertices);
         pos = obj.transform.localPosition = GetFinalPosition(lastFloorSize, finalSize);
     }
+
+    protected override Vector2[] GenerateUVs(int verticesLength)
+    {
+        Vector2[] uvs = new Vector2[verticesLength];
+        Vector2 wallsColor = GetColorPosition(TextureColorIDs.lightBrown);
+        for (int i = 0; i < verticesLength; i++)
+        {
+            uvs[i] = wallsColor;
+        }
+
+        return uvs;
+    }
+
     Vector3 GetFinalPosition(Vector3 lastBaseSize, Vector3 currSize)
     {
 
@@ -52,7 +67,7 @@ public class Attic : Segment
 
         Vector3 finalSize = new Vector3(
             lastFloorSize.x,
-            UnityEngine.Random.Range(lastFloorSize.x/2.5f, lastFloorSize.x+0.3f),
+            UnityEngine.Random.Range(lastFloorSize.x/2.5f, lastFloorSize.x*0.9f),
             lastFloorSize.z
         );
 
@@ -102,4 +117,6 @@ public class Attic : Segment
         
         
     }
+
+  
 }

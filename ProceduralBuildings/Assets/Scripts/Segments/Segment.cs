@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Segment
+public abstract class Segment
 {
     public Vector3 pos;
     public Vector3 finalSize;
@@ -15,6 +15,10 @@ public class Segment
     protected Vector3Int baseCubeSize;
 
     private MeshGenerator meshGenerator;
+
+    protected const float textureImageSize = 512;
+    protected const float textureColorSize = 32;
+    protected const float textureOffset = textureColorSize / 2;
 
     protected int CalculateRingSize()
     {
@@ -38,6 +42,11 @@ public class Segment
     {
         meshGenerator = new MeshGenerator();
         obj = meshGenerator.GenerateBasePlane(material, size, name);
+    }
+
+    protected Vector2 GetColorPosition(Vector2Int pos)
+    {
+        return new Vector2(((textureColorSize * pos.x) - textureOffset) / textureImageSize, ((textureColorSize * pos.y) - textureOffset) / textureImageSize);
     }
     /*.      x--------x
      *.     /|       /|
@@ -128,6 +137,8 @@ public class Segment
             
         }
     }
+
+    protected abstract Vector2[] GenerateUVs(int verticesLength);
 
     protected void RemoveVerticesAndTriangles(int removeFrom, int removeTo)
     {

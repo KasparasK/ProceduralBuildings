@@ -21,7 +21,7 @@ public class Building
         {
             floors[i] =
                 new Base(
-                    generatorController.baseMaterial,
+                    generatorController.mainMaterial,
                     generatorController.parentObj.transform,
                     RandomizeOpeningStyle(),
                     RandomizeOpeningStyle(),
@@ -32,20 +32,18 @@ public class Building
                     vertexVisualiser.VisualiseVertices);
 
             floors[i].GenerateWindows(
-                generatorController.windowMaterial,
-                generatorController.glassMaterial,
-                generatorController.segmentsMaterial, 
+                generatorController.mainMaterial,
                 generatorController.leftFirewall,
                 generatorController.rightFirewall,
                 generatorController.backFirewall);
         }
         attic = new Attic(
-            generatorController.baseMaterial,
+            generatorController.mainMaterial,
             floors[floors.Length - 1],
             vertexVisualiser.VisualiseVertices);
 
         roof = new Roof(
-            generatorController.roofMaterial,
+            generatorController.mainMaterial,
             floors[floors.Length-1],
             attic,
             vertexVisualiser.VisualiseVertices);

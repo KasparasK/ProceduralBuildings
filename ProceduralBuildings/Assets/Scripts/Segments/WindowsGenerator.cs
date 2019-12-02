@@ -30,13 +30,13 @@ public class WindowsGenerator
     private const float maxDistanceBetweenSegments = 0.2f;
     private const float windowOffset = 0.02f; //kiek islindes
 
-    public WindowsGenerator(Base baseObj, Material windowMat, Material glassMat, Material segmentaionMat, bool leftFirewall, bool rightFirewall, bool backFirewall)
+    public WindowsGenerator(Base baseObj, Material material,  bool leftFirewall, bool rightFirewall, bool backFirewall)
     {
 
-        GenerateWindows(baseObj, windowMat, glassMat, segmentaionMat, leftFirewall, rightFirewall, backFirewall);
+        GenerateWindows(baseObj, material,  leftFirewall, rightFirewall, backFirewall);
     }
 
-    void GenerateWindows(Base baseObj, Material windowMat, Material glassMat, Material segmentaionMat, bool leftFirewall, bool rightFirewall, bool backFirewall)
+    void GenerateWindows(Base baseObj, Material material, bool leftFirewall, bool rightFirewall, bool backFirewall)
     {
         Vector3 winSize = RandomiseWindowSize(baseObj.finalSize);
         WindowParams windowParams = GenerateWindowsPositions(baseObj.finalSize, winSize, leftFirewall, rightFirewall, backFirewall);
@@ -45,9 +45,7 @@ public class WindowsGenerator
         {
             new Window(
                 baseObj,
-                windowMat, 
-                glassMat, 
-                segmentaionMat,
+                material,
                 winSize, 
                 windowParams.positions[i],
                 windowParams.rotations[i],

@@ -6,23 +6,36 @@ using UnityEngine;
 public class SquareOpening : Segment
 {
     private const string name = "squareOpening";
-
-    public SquareOpening(Vector3 goalSize, Material material,Vector3 winFrameDimensions, Action<Vector3[]> verticesDebugger = null)
+    private Vector2Int color;
+    public SquareOpening(Vector3 goalSize, Material material,Vector3 winFrameDimensions, Vector2Int color, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
         baseCubeSize = new Vector3Int(1,4,1);
         GenerateBaseCube(material, baseCubeSize, name);
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
-
+        this.color = color;
         Vector3[] vertices = mesh.vertices;
 
         AlterCubeSize(new Vector3(winFrameDimensions.x, goalSize.y*4, winFrameDimensions.z), baseCubeSize,ref vertices);
         SquareUp(goalSize,ref vertices, winFrameDimensions.x);
 
         mesh.vertices = vertices;
-        
+        mesh.uv = GenerateUVs(vertices.Length);
+
         RemoveVerticesAndTriangles(CalculateRingSize()*(baseCubeSize.y+1),vertices.Length-1);
 
+    }
+
+    protected override Vector2[] GenerateUVs(int verticesLength)
+    {
+        Vector2[] uvs = new Vector2[verticesLength];
+        Vector2 wallsColor = GetColorPosition(color);
+        for (int i = 0; i < verticesLength; i++)
+        {
+            uvs[i] = wallsColor;
+        }
+
+        return uvs;
     }
 
     void SquareUp(Vector3 goalSize, ref Vector3[] vertices,float xSize)
@@ -110,4 +123,6 @@ public class SquareOpening : Segment
         //---------------------------------
 
     }
+
+   
 }

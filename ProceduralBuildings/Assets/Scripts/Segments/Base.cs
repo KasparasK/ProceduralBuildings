@@ -51,7 +51,7 @@ public class Base : Segment
 
         AddSideDecor(ref vertices,backFirewall,leftFirewall,rightFirewall,lastBase);
         mesh.vertices = vertices;
-        mesh.uv = UnwarpUVs(vertices);
+        mesh.uv = GenerateUVs(vertices.Length);
 
         /*  int removeFrom = CalculateRingSize() * (baseCubeSize.y + 1);
           int removeTo = removeFrom + ((baseCubeSize.x + 1) * (baseCubeSize.z + 1)) - 1;
@@ -59,25 +59,21 @@ public class Base : Segment
           */
     }
 
-    public Vector2[] UnwarpUVs(Vector3[] vertices)
+    protected override Vector2[] GenerateUVs(int verticesLength)
     {
-        float imageSize = 512;
-        float colorSize = 32;
-        float offset = colorSize / 2;
-        Vector2 wallsColor = new Vector2(((colorSize * 2)-offset )/ imageSize, colorSize-offset / imageSize);
-        Vector2 pillarsColor = new Vector2((colorSize-offset) / imageSize, colorSize-offset / imageSize);
+        Vector2 wallsColor = GetColorPosition(TextureColorIDs.lightBrown);
+        Vector2 pillarsColor = GetColorPosition(TextureColorIDs.black);
         bool pillarColor = false;
-        Vector2[] uvs = new Vector2[vertices.Length];
-         Debug.Log(wallsColor.x+" "+wallsColor.y);
+        Vector2[] uvs = new Vector2[verticesLength];
         uvs[0] = pillarsColor;
         uvs[1] = pillarsColor;
         int increment = 2;
         int i = 2;
-        while (i < vertices.Length-((baseCubeSize.x+1)* (baseCubeSize.z + 1)*2))
+        while (i < verticesLength - ((baseCubeSize.x+1)* (baseCubeSize.z + 1)*2))
         {
             for (int j = 0; j < increment; j++)
             {
-                if(i+j >= vertices.Length)
+                if(i+j >= verticesLength)
                     break;
                 
                 uvs[i+j] = pillarColor ? pillarsColor : wallsColor;
@@ -391,8 +387,8 @@ public class Base : Segment
 
     }
 
-    public void GenerateWindows(Material windowMat, Material glassMat, Material segmentaionMat, bool leftFirewall, bool rightFirewall, bool backFirewall)
+    public void GenerateWindows(Material material, bool leftFirewall, bool rightFirewall, bool backFirewall)
     {
-        WindowsGenerator windowsGenerator = new WindowsGenerator(this, windowMat, glassMat,segmentaionMat, leftFirewall, rightFirewall, backFirewall);
+        WindowsGenerator windowsGenerator = new WindowsGenerator(this, material, leftFirewall, rightFirewall, backFirewall);
     }
 }

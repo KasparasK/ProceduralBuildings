@@ -35,8 +35,20 @@ public class Roof : Segment
 
         mesh.vertices = vertices;
         mesh.RecalculateNormals();
-
+        mesh.uv = GenerateUVs(vertices.Length);
         pos = obj.transform.localPosition = GetFinalPosition(lastFloorSize, finalSize);
+    }
+    protected override Vector2[] GenerateUVs(int verticesLength)
+    {
+
+        Vector2[] uvs = new Vector2[verticesLength];
+        Vector2 color = GetColorPosition(TextureColorIDs.red);
+        for (int i = 0; i < verticesLength; i++)
+        {
+            uvs[i] = color;
+        }
+
+        return uvs;
     }
     Vector3 GetFinalPosition(Vector3 lastBaseSize, Vector3 currSize)
     {
@@ -144,4 +156,6 @@ public class Roof : Segment
             tempId++;
         }
     }
+
+ 
 }
