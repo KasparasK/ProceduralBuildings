@@ -52,7 +52,6 @@ public class Building
 
     int RandomizeFloorCount(int maxFloors)
     {
-        return 3;
           return Random.Range(1, maxFloors+1);
     }
 
