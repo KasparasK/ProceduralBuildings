@@ -52,7 +52,7 @@ public class MeshGenerator {
         vertices = new Vertex[verticesCount];
 
         CreateMesh();
-
+        baseRectangle.isStatic = true;
         return baseRectangle;
     }
 

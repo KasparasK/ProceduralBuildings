@@ -44,6 +44,7 @@ public class Segmentation : Segment
             mesh.uv = GenerateUVs(vertices.Length);
             obj.transform.localPosition = horSegPositions[i];
             obj.transform.localRotation = Quaternion.Euler(Vector3.zero);
+
             objs.Add(obj);
         }
 
