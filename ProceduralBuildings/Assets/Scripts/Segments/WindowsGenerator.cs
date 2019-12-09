@@ -1,18 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public struct WindowParams
 {
-    public List<Quaternion> rotations;
-    public List<Vector3> positions;
     public List<Vector3> vertSegPositions;
-    public List<Quaternion> vertSegRotatations;
     public List<Vector3> horSegPositions;
-    public List<Quaternion> horSegRotatations;
-
-
+    public float angle;
+    public Vector3[] outerArcF;
+    public Vector3[] outerArcB;
+    public Vector3[] innerArcF;
+    public Vector3[] innerArcB;
+    public OpeningStyle openingStyle;
 }
 public class WindowsGenerator
 {
@@ -30,27 +28,34 @@ public class WindowsGenerator
     private const float maxDistanceBetweenSegments = 0.2f;
     private const float windowOffset = 0.02f; //kiek islindes
 
-    public WindowsGenerator(Base baseObj, Material material,  bool leftFirewall, bool rightFirewall, bool backFirewall)
+    public WindowsGenerator(Base baseObj, Material material,  bool leftFirewall, bool rightFirewall, bool backFirewall, OpeningStyle openingStyle)
     {
 
-        GenerateWindows(baseObj, material,  leftFirewall, rightFirewall, backFirewall);
+        GenerateWindows(baseObj, material,  leftFirewall, rightFirewall, backFirewall, openingStyle);
     }
 
-    void GenerateWindows(Base baseObj, Material material, bool leftFirewall, bool rightFirewall, bool backFirewall)
+    void GenerateWindows(Base baseObj, Material material, bool leftFirewall, bool rightFirewall, bool backFirewall, OpeningStyle openingStyle)
     {
+        List<Quaternion> rotations = new List<Quaternion>();
+        List<Vector3> positions = new List<Vector3>();
+        WindowParams windowParams = new WindowParams();
+        windowParams.openingStyle = openingStyle;
         Vector3 winSize = RandomiseWindowSize(baseObj.finalSize);
-        WindowParams windowParams = GenerateWindowsPositions(baseObj.finalSize, winSize, leftFirewall, rightFirewall, backFirewall);
+        GenerateWindowsPositions(baseObj.finalSize, winSize, leftFirewall, rightFirewall, backFirewall,ref positions, ref rotations);
+
+        if (openingStyle == OpeningStyle.ARCH)
+            windowParams = GenerateArcParameters(windowParams, winSize);
+
         windowParams = GenerateSegmentsPositions(windowParams, winSize);
-        for (int i = 0; i < windowParams.positions.Count; i++)
+        for (int i = 0; i < positions.Count; i++)
         {
             new Window(
                 baseObj,
                 material,
                 winSize, 
-                windowParams.positions[i],
-                windowParams.rotations[i],
-                windowParams.vertSegPositions,
-                windowParams.horSegPositions,
+                positions[i],
+                rotations[i],
+                windowParams,
                 segmentDimensions,
                 winFrameDimensions,
                 windowOffset
@@ -67,13 +72,15 @@ public class WindowsGenerator
             );
     }
 
-    WindowParams GenerateWindowsPositions(Vector3 baseSize, Vector3 winSize, bool leftFirewall, bool rightFirewall, bool backFirewall)
+    void GenerateWindowsPositions(
+        Vector3 baseSize, 
+        Vector3 winSize, 
+        bool leftFirewall, 
+        bool rightFirewall, 
+        bool backFirewall,
+        ref List<Vector3> positions, 
+        ref List<Quaternion> rotations)
     {
-        WindowParams windowParams = new WindowParams();
-
-        List<Vector3> position = new List<Vector3>();
-        List<Quaternion> rotations = new List<Quaternion>();
-
 
         float maxGap =
             Random.Range(minDistanceBetweenWindows,
@@ -92,24 +99,24 @@ public class WindowsGenerator
         Vector3 addBefore = new Vector3(step,0,0);
         Vector3 addAfter = new Vector3( step+winSize.x, 0,0);
 
-        DistributePostionsEvenly(
+        DistributePostionsAndRotationsEvenly(
             new Vector3(winSize.x, y, windowOffset),
             Quaternion.Euler(new Vector3(0, 180, 0)),
             addBefore,
             addAfter,
             xCount,
-            ref position,
+            ref positions,
             ref rotations
             );
         if (backFirewall == false)
         {
-            DistributePostionsEvenly(
+            DistributePostionsAndRotationsEvenly(
                 new Vector3(0, y, baseSize.z - windowOffset),
                 Quaternion.Euler(Vector3.zero),
                 addBefore,
                 addAfter,
                 xCount,
-                ref position,
+                ref positions,
                 ref rotations
             );
         }
@@ -123,37 +130,39 @@ public class WindowsGenerator
 
         if (leftFirewall == false)
         {
-            DistributePostionsEvenly(
+            DistributePostionsAndRotationsEvenly(
                 new Vector3(windowOffset, y, 0),
                 Quaternion.Euler(new Vector3(0, 270, 0)),
                 addBefore,
                 addAfter,
                 zCount,
-                ref position,
+                ref positions,
                 ref rotations
             );
         }
 
         if (rightFirewall == false)
         {
-            DistributePostionsEvenly(
+            DistributePostionsAndRotationsEvenly(
                 new Vector3(baseSize.x - windowOffset, y, winSize.x),
                 Quaternion.Euler(new Vector3(0, 90, 0)),
                 addBefore,
                 addAfter,
                 zCount,
-                ref position,
+                ref positions,
                 ref rotations
             );
         }
-
-        windowParams.positions = position;
-        windowParams.rotations = rotations;
-        return windowParams;
-
     }
 
-    void DistributePostionsEvenly(Vector3 startingPos, Quaternion rotToAdd, Vector3 addBefore, Vector3 addAfter,int count ,ref List<Vector3> position, ref List<Quaternion> rotations)
+    void DistributePostionsAndRotationsEvenly(
+        Vector3 startingPos,
+        Quaternion rotToAdd,
+        Vector3 addBefore,
+        Vector3 addAfter,
+        int count ,
+        ref List<Vector3> position,
+        ref List<Quaternion> rotations)
     {
         Vector3 posToAdd = startingPos;
         for (int i = 0; i < count; i++)
@@ -164,12 +173,21 @@ public class WindowsGenerator
             posToAdd += addAfter;
         }
     }
+
+    void DistributePositionsEvenly(Vector3 startingPos, Vector3 addBefore, Vector3 addAfter, int count, ref List<Vector3> position)
+    {
+        Vector3 posToAdd = startingPos;
+        for (int i = 0; i < count; i++)
+        {
+            posToAdd += addBefore;
+            position.Add(posToAdd);
+            posToAdd += addAfter;
+        }
+    }
     WindowParams GenerateSegmentsPositions(WindowParams wParams, Vector3 winSize)
     {
         wParams.vertSegPositions = new List<Vector3>();
         wParams.horSegPositions = new List<Vector3>();
-        wParams.vertSegRotatations = new List<Quaternion>();
-        wParams.horSegRotatations = new List<Quaternion>();
 
         float height = winSize.y - winFrameDimensions.y * 2;
         float width = winSize.x - winFrameDimensions.x * 2;
@@ -179,6 +197,8 @@ public class WindowsGenerator
 
         int verticalCount = (int)(width / (segmentDimensions.x + horizontalGap * 2));
         int horizontalCount = (int)(height / (segmentDimensions.x + verticalGap * 2));
+        verticalCount = verticalCount== 0 ? 1 : verticalCount;
+        horizontalCount = horizontalCount == 0 ? 1 : horizontalCount;
 
         float spaceForOneSegment = height / horizontalCount;
         float step = (spaceForOneSegment - segmentDimensions.y) / 2;
@@ -186,14 +206,12 @@ public class WindowsGenerator
         Vector3 addBefore = new Vector3(0, step, 0);
         Vector3 addAfter = new Vector3(0,step + segmentDimensions.y, 0);
 
-        DistributePostionsEvenly(
-            Vector3.zero, 
-            Quaternion.Euler(Vector3.zero),
+        DistributePositionsEvenly(
+            Vector3.zero,
             addBefore,
             addAfter,
             horizontalCount,
-            ref wParams.horSegPositions,
-            ref wParams.horSegRotatations
+            ref wParams.horSegPositions
         );
 
         spaceForOneSegment = width / verticalCount;
@@ -203,17 +221,50 @@ public class WindowsGenerator
         addAfter = new Vector3(step + segmentDimensions.x,0,0);
 
 
-        DistributePostionsEvenly(
+        DistributePositionsEvenly(
             new Vector3(winFrameDimensions.x, 0, 0),
-            Quaternion.Euler(Vector3.zero),
             addBefore,
             addAfter,
             verticalCount,
-            ref wParams.vertSegPositions,
-            ref wParams.vertSegRotatations
+            ref wParams.vertSegPositions
         );
 
 
         return wParams;
+    }
+
+    WindowParams GenerateArcParameters(WindowParams windowParams, Vector3 winSize)
+    {
+        float angle = Random.Range(45, 60);
+        ArcGenerator arcGenerator = new ArcGenerator();
+
+        int arcPoints = BaseObjSizes.openingArcSize.y - 3;
+
+        Vector3[] outerArcF = arcGenerator.GenerationZwei(angle, winSize.x, new Vector3(0, winSize.y, 0), arcPoints);
+        Vector3[] outerArcB = arcGenerator.GenerationZwei(angle, winSize.x, new Vector3(0, winSize.y, winFrameDimensions.z), arcPoints);
+
+        float addX = (winSize.x - (winSize.x - winFrameDimensions.x * 2)) / 2;
+
+        Vector3[] innerArcF = arcGenerator.GenerationZwei(angle, winSize.x - winFrameDimensions.x * 2, new Vector3(addX, winSize.y, 0), arcPoints);
+        Vector3[] innerArcB = arcGenerator.GenerationZwei(angle, winSize.x - winFrameDimensions.x * 2, new Vector3(addX, winSize.y, winFrameDimensions.z), arcPoints);
+
+        float arcHeight = outerArcB[arcPoints / 2 - 1].y - outerArcB[0].y;
+
+        for (int i = 0; i < outerArcF.Length; i++)
+        {
+            outerArcF[i].y -= arcHeight;
+            outerArcB[i].y -= arcHeight;
+            innerArcF[i].y -= arcHeight;
+            innerArcB[i].y -= arcHeight;
+        }
+
+
+        windowParams.outerArcF = outerArcF;
+        windowParams.outerArcB = outerArcB;
+        windowParams.innerArcF = innerArcF;
+        windowParams.innerArcB = innerArcB;
+        windowParams.angle = angle;
+
+        return windowParams;
     }
 }

@@ -8,16 +8,16 @@ public class Roof : Segment
 {
     private const string name = "roof";
 
-    readonly Vector3Int minBaseSize = new Vector3Int(1, 2, 1);
+    private readonly Vector3Int minBaseSize = BaseObjSizes.roofSize;
     const float zToAdd = 0.3f;
     public Roof(Material material, Base parentBase,Attic attic ,Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
-        baseCubeSize = minBaseSize;
+        baseObjSize = minBaseSize;
 
-        GenerateBaseCube(material, baseCubeSize,name);
+        GenerateBaseCube(material, baseObjSize,name);
         obj.transform.parent = parentBase.obj.transform;
-        AlterMesh(baseCubeSize,parentBase.finalSize, attic.finalSize);
+        AlterMesh(baseObjSize,parentBase.finalSize, attic.finalSize);
         
     }
 

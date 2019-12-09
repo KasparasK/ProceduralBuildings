@@ -10,9 +10,9 @@ public class Attic : Segment
     public Attic(Material material, Base parentBase, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
-        baseCubeSize = new Vector3Int(1,1,1);
+        baseObjSize = BaseObjSizes.atticSize;
 
-        GenerateBaseCube(material, baseCubeSize,name);
+        GenerateBaseCube(material, baseObjSize,name);
         obj.transform.parent = parentBase.obj.transform;
         AlterMesh(parentBase.finalSize);
     }
@@ -24,12 +24,12 @@ public class Attic : Segment
 
         finalSize = GetFinalSize(lastFloorSize);
 
-        AlterCubeSize(finalSize, baseCubeSize, ref vertices);
+        AlterCubeSize(finalSize, baseObjSize, ref vertices);
         FormAttic(finalSize, lastFloorSize, ref vertices);
         mesh.vertices = vertices;
 
-        int removeFrom = CalculateRingSize() * (baseCubeSize.y + 1);
-        int removeTo = removeFrom + ((baseCubeSize.x + 1) * (baseCubeSize.z + 1)) - 1;
+        int removeFrom = CalculateRingSize() * (baseObjSize.y + 1);
+        int removeTo = removeFrom + ((baseObjSize.x + 1) * (baseObjSize.z + 1)) - 1;
         RemoveVerticesAndTriangles(removeFrom, removeTo);
         mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         vertices = mesh.vertices;
@@ -42,7 +42,7 @@ public class Attic : Segment
     protected override Vector2[] GenerateUVs(int verticesLength)
     {
         Vector2[] uvs = new Vector2[verticesLength];
-        Vector2 wallsColor = GetColorPosition(TextureColorIDs.lightBrown);
+        Vector2 wallsColor = GetColorPosition(TextureColorIDs.yellow);
         for (int i = 0; i < verticesLength; i++)
         {
             uvs[i] = wallsColor;

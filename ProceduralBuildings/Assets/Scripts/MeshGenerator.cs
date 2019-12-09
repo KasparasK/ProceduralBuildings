@@ -23,7 +23,7 @@ public class MeshGenerator {
     int xSize, ySize, zSize;
 
     private Mesh mesh;
-    private Vertex[] vertices;
+    private Vector3[] vertices;
     int[] triangles;
     int vertex;
     private int verticesCount;
@@ -49,33 +49,45 @@ public class MeshGenerator {
             (ySize - 1) * (zSize - 1)) * 2;
 
         verticesCount = cornerVertices + edgeVertices + faceVertices;
-        vertices = new Vertex[verticesCount];
+        vertices = new Vector3[verticesCount];
 
         CreateMesh();
         baseRectangle.isStatic = true;
         return baseRectangle;
     }
+    public GameObject GenerateBasePlane(Material material, Vector3Int size, string name)
+    {
+        xSize = size.x;
+        ySize = size.y;
+        zSize = 0;
 
+        GameObject basePlane = new GameObject();
+        basePlane.AddComponent<MeshFilter>().mesh = mesh = new Mesh();
+        basePlane.AddComponent<MeshRenderer>().sharedMaterial = material;
+
+        mesh.name = name;
+        basePlane.name = name;
+
+        verticesCount = (xSize + 1) * (ySize + 1);
+        vertices = new Vector3[verticesCount];
+
+        CreateMesh();
+
+        return basePlane;
+    }
     void CreateMesh()
     {
-        GenerateVertices();
-      
-        Vector3[] finalVertices = new Vector3[verticesCount];
-        List<Vector3> finalNormals = new List<Vector3>();
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            finalVertices[i] = vertices[i].pos;
-            finalNormals.AddRange(vertices[i].normals);
-        }
+        if(zSize > 0)
+            GenerateVertices();
+        else
+            GenerateVerticesPlane();
 
-        mesh.vertices = finalVertices;
+        mesh.vertices = vertices;
         CreateTriangles();
+
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
     }
-
-
-
     void GenerateVertices()
     {
         int v = 0;
@@ -86,34 +98,21 @@ public class MeshGenerator {
             //sukuriamas spirale pirmas ziedas
             for (int x = 0; x <= xSize; x++, v++)
             {
-                switch (x)
-                {
-                    case 0: //kampas 
-                        SetVertex(v, x, y, 0,new List<Vector3>
-                        {
-                            Vector3.one
-                        });
-                        break;
-                    default:
-                        SetVertex(v, x, y, 0, new List<Vector3> { Vector3.one });
-                        break;
-
-                }
-
+                SetVertex(v, x, y, 0);
             }
             for (int z = 0; z <= zSize; z++, v++)
             {
-                SetVertex(v, xSize, y, z, new List<Vector3> { Vector3.one });
+                SetVertex(v, xSize, y, z);
             }
             for (int x = xSize; x >= 0; x--, v++)
             {
 
-                SetVertex(v, x, y, zSize, new List<Vector3> { Vector3.one });
+                SetVertex(v, x, y, zSize);
             }
             for (int z = zSize; z >= 0; z--, v++)
             {
 
-                SetVertex(v, 0, y, z, new List<Vector3> { Vector3.one });
+                SetVertex(v, 0, y, z);
             }
         }
 
@@ -125,7 +124,7 @@ public class MeshGenerator {
                 for (int x = 0; x <= xSize; x++, v++)
                 {
 
-                    SetVertex(v, x, y, z, new List<Vector3> { Vector3.one });
+                    SetVertex(v, x, y, z);
                 }
             }
 
@@ -134,33 +133,50 @@ public class MeshGenerator {
 
 
     }
-    private void SetVertex(int i, int x, int y, int z,List<Vector3> normalVectors)
+
+    void GenerateVerticesPlane()
+    {
+        int v = 0;
+
+        //ziedu sluoksniai
+        for (int y = 0; y <= ySize; y++)
+        {
+            //sukuriamas spirale pirmas ziedas
+            for (int x = 0; x <= xSize; x++, v++)
+            {
+                SetVertex(v, x, y, 0);
+            }
+        }
+    }
+    private void SetVertex(int i, int x, int y, int z)
     {
 
-            vertices[i]=  new Vertex(new Vector3(x, y, z), normalVectors.Count);
-        //   Vector3 inner =vertices[i].pos
-        for (int j = 0; j < normalVectors.Count; j++)
-        {
-            vertices[i].normals[j] = (vertices[i].pos - normalVectors[j]).normalized;
-        }
-        //   normals[i] = 
+            vertices[i]=  new Vector3(x, y, z);
 
     }
     void CreateTriangles()
     {
         vertex = 0;
-        int ring = ((xSize+1) * 2) + ((zSize+1) * 2);
+     
         int t = 0;
-        t = GenerateSideTriangles(ring, t);
-        t = GenerateTopAndBottomTriangles(ring, t);
+        if (zSize > 0)
+        {
+            int ring = ((xSize + 1) * 2) + ((zSize + 1) * 2);
+            t = GenerateSideTriangles(ring, t);
+            GenerateTopAndBottomTriangles(ring, t);
+        }
+        else
+        {
+            int ring = xSize + 1;
+            GeneratePlaneTriangles(ring, t);
+        }
 
     }
 
     int GenerateSideTriangles(int ring,int t)
     {
-
         triangles = new int[
-          (zSize*ySize*12)+ (xSize * ySize * 12)+ (xSize * zSize * 12)
+          (zSize*ySize* 12) + (xSize * ySize * 12) + (xSize * zSize * 12)
         ];
         for (int y = 0; y < ySize; y++)
         {
@@ -193,7 +209,27 @@ public class MeshGenerator {
 
         return t;
     }
+    int GeneratePlaneTriangles(int ring, int t)
+    {
+        triangles = new int[
+            xSize * ySize * 6
+        ];
+        for (int y = 0; y < ySize; y++)
+        {
+            for (int x = 0; x < xSize; x++, vertex++)
+            {
+                SplitQuad(ref t,
+                    vertex,
+                    ring + vertex,
+                    (vertex + 1),
+                    ring + vertex + 1);
+            }
 
+            vertex++;
+        }
+
+        return t;
+    }
     int GenerateTopAndBottomTriangles(int ring, int t)
     {
 
@@ -245,26 +281,7 @@ public class MeshGenerator {
         t += 6; 
     }
 
-    public GameObject GenerateBasePlane(Material material, Vector2Int size, string name)
-    {
-        xSize = size.x;
-        ySize = size.y;
-        zSize = 0;
-
-        GameObject basePlane = new GameObject();
-        basePlane.AddComponent<MeshFilter>().mesh = mesh = new Mesh();
-        basePlane.AddComponent<MeshRenderer>().sharedMaterial = material;
-
-        mesh.name = name;
-        basePlane.name = name;
-
-        verticesCount = (xSize+1)*(ySize+1);
-        vertices = new Vertex[verticesCount];
-
-        CreateMesh();
-
-        return basePlane;
-    }
+  
 
 
     public GameObject RemoveVerticesAndTriangles(GameObject obj, int removeFrom, int removeTo)

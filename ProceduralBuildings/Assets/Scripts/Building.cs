@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
 
 
@@ -13,9 +12,11 @@ public class Building
     public Base[] floors;
     public Roof roof;
     public Attic attic;
-    public Building(int maxFloors,GeneratorController generatorController, VertexVisualiser vertexVisualiser)
+    public Foundation foundation;
+    public Building(int minStoriesCount, int maxStoriesCount, GeneratorController generatorController, VertexVisualiser vertexVisualiser)
     {
-       floors = new Base[RandomizeFloorCount(maxFloors)];
+
+        floors = new Base[RandomizeFloorCount(minStoriesCount, maxStoriesCount)];
 
         for (int i = 0; i < floors.Length; i++)
         {
@@ -37,6 +38,7 @@ public class Building
                 generatorController.rightFirewall,
                 generatorController.backFirewall);
         }
+        foundation = new Foundation(generatorController.mainMaterial, generatorController.parentObj.transform,floors[0]);
         attic = new Attic(
             generatorController.mainMaterial,
             floors[floors.Length - 1],
@@ -47,12 +49,13 @@ public class Building
             floors[floors.Length-1],
             attic,
             vertexVisualiser.VisualiseVertices);
-        
+
+   
     }
 
-    int RandomizeFloorCount(int maxFloors)
+    int RandomizeFloorCount(int from, int to)
     {
-          return Random.Range(1, maxFloors+1);
+          return Random.Range(from, to + 1);
     }
 
     int RandomizeOpeningStyle()

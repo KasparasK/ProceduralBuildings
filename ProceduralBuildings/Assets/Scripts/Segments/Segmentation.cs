@@ -9,7 +9,7 @@ public class Segmentation : Segment
     public Segmentation(GameObject parentObj ,Vector3 winSize, Vector3 segmentDimensions, Material material, List<Vector3> vertSegPositions, List<Vector3> horSegPositions, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
-        baseCubeSize = new Vector3Int(1, 1, 1);
+        baseObjSize = new Vector3Int(1, 1, 1);
 
         GenerateSegements(parentObj, winSize, material, vertSegPositions, horSegPositions, segmentDimensions);
     }
@@ -30,14 +30,14 @@ public class Segmentation : Segment
 
         for (int i = 0; i < horSegPositions.Count; i++)
         {
-            GenerateBaseCube(material, baseCubeSize, name);
+            GenerateBaseCube(material, baseObjSize, name);
             Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
 
             Vector3[] vertices = mesh.vertices;
 
             Vector3 size = new Vector3(winSize.x, segmentDimensions.y, segmentDimensions.z); 
 
-            AlterCubeSize(size, baseCubeSize, ref vertices);
+            AlterCubeSize(size, baseObjSize, ref vertices);
 
             mesh.vertices = vertices;
             obj.transform.parent = parentObj.transform;
@@ -52,14 +52,14 @@ public class Segmentation : Segment
 
         for (int i = 0; i < vertSegPositions.Count; i++)
         {
-            GenerateBaseCube(material, baseCubeSize, name);
+            GenerateBaseCube(material, baseObjSize, name);
             Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
 
             Vector3[] vertices = mesh.vertices;
 
             Vector3 size = new Vector3(segmentDimensions.x, winSize.y, segmentDimensions.z);
 
-            AlterCubeSize(size, baseCubeSize, ref vertices);
+            AlterCubeSize(size, baseObjSize, ref vertices);
 
             mesh.vertices = vertices;
             obj.transform.parent = parentObj.transform;

@@ -15,23 +15,30 @@ public class Window : Segment
         Vector3 winSize,
         Vector3 pos,
         Quaternion rot,
-        List<Vector3> vertSegPositions,
-        List<Vector3> horSegPositions,
+        WindowParams winParams,
         Vector3 segmentDimensions,
         Vector3 winFrameDimensions,
         float winPosOffset
 
     )
     {
-        openingBase = new SquareOpening(winSize, material, winFrameDimensions, TextureColorIDs.grey);
+        if(winParams.openingStyle == OpeningStyle.ARCH)
+            openingBase = new ArchedOpening(winSize,material,winFrameDimensions,TextureColorIDs.red, winParams); 
+        else
+            openingBase = new SquareOpening(winSize, material, winFrameDimensions, TextureColorIDs.grey);
+
         openingBase.obj.transform.parent = baseToAttach.obj.transform;
         openingBase.obj.transform.localPosition = pos;
         openingBase.obj.transform.localRotation = rot;
 
-        segmentation = new Segmentation(openingBase.obj,winSize, segmentDimensions, material, vertSegPositions,horSegPositions);
-        glass = new Plane(material, openingBase.obj.transform,winSize, TextureColorIDs.lightBlue);
-        glass.obj.transform.localPosition = new Vector3(0, 0, winPosOffset+0.01f);
-        glass.obj.transform.localRotation = Quaternion.Euler(Vector3.zero);
+        segmentation = new Segmentation(openingBase.obj,winSize, segmentDimensions, material, winParams.vertSegPositions, winParams.horSegPositions);
+        if (winParams.openingStyle == OpeningStyle.ARCH)
+            glass = new Plane(material, openingBase.obj.transform,winSize, TextureColorIDs.lightBlue, winParams.innerArcF);
+        else
+            glass = new Plane(material, openingBase.obj.transform, winSize, TextureColorIDs.lightBlue); //new Plane(material, openingBase.obj.transform, winSize,openingBase.innerArcF, TextureColorIDs.lightBlue);
+
+        glass.obj.transform.localPosition = new Vector3(winSize.x, 0, winPosOffset+0.01f);
+        glass.obj.transform.localRotation = Quaternion.Euler(new Vector3(0,180,0));
 
 
     }

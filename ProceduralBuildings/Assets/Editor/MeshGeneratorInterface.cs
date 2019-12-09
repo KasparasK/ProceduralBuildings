@@ -23,9 +23,14 @@ public class MeshGeneratorInterface : Editor
 
             }
         }
-        if (GUILayout.Button("Generate Building", GUILayout.Width(100)))
+        if (GUILayout.Button("Generate Building", GUILayout.Width(120)))
         {
            generatorController.Generate();  
+        }
+
+        if (GUILayout.Button("Generate Building Test", GUILayout.Width(120)))
+        {
+            generatorController.GenerationTest();
         }
     }
 }

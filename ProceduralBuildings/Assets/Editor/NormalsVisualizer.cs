@@ -5,7 +5,7 @@ using UnityEngine;
 public class NormalsVisualizer : Editor
 {
 
-  /* private Mesh mesh;
+ /*  private Mesh mesh;
 
     void OnEnable()
     {
