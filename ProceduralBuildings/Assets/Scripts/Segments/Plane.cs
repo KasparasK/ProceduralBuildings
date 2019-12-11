@@ -12,7 +12,7 @@ public class Plane : Segment
     {
         base.verticesDebugger = verticesDebugger;
         this.color = color;
-        baseObjSize = BaseObjSizes.planeSqSize;
+        Vector3Int baseObjSize = BaseObjSizes.planeSqSize;
 
         GenerateBasePlane(material, baseObjSize, name);
 
@@ -22,7 +22,7 @@ public class Plane : Segment
 
         Vector3[] vertices = mesh.vertices;
         AlterPlaneSize(size, baseObjSize, ref vertices);
-        mesh.uv = GenerateUVs(vertices.Length);
+        mesh.uv = GenerateUVs(vertices.Length,color);
         mesh.vertices = vertices;
       
     }
@@ -30,7 +30,7 @@ public class Plane : Segment
     {
         base.verticesDebugger = verticesDebugger;
         this.color = color;
-        baseObjSize = BaseObjSizes.planeArcSize;
+        Vector3Int baseObjSize = BaseObjSizes.planeArcSize;
 
         GenerateBasePlane(material, baseObjSize, name);
 
@@ -40,15 +40,16 @@ public class Plane : Segment
 
         Vector3[] vertices = mesh.vertices;
         AlterPlaneSize(size, baseObjSize, ref vertices);
-        ArcThePlane(arcPoints, ref vertices);
-        mesh.uv = GenerateUVs(vertices.Length);
+        ArcThePlane(arcPoints, ref vertices, baseObjSize);
+        mesh.uv = GenerateUVs(vertices.Length, color);
+
         mesh.vertices = vertices;
 
         
         VisualiseVertices(vertices);
     }
 
-    void ArcThePlane(Vector3[] arcPoints, ref Vector3[] vertices)
+    void ArcThePlane(Vector3[] arcPoints, ref Vector3[] vertices, Vector3Int baseObjSize)
     {
         int tempId = baseObjSize.x+=1;
    
@@ -57,16 +58,5 @@ public class Plane : Segment
             SetVertexPosition(ref vertices[tempId], arcPoints[i]);
             tempId++;
         }
-    }
-    protected override Vector2[] GenerateUVs(int verticesLength)
-    {
-        Vector2[] uvs = new Vector2[verticesLength];
-        Vector2 wallsColor = GetColorPosition(color);
-        for (int i = 0; i < verticesLength; i++)
-        {
-            uvs[i] = wallsColor;
-        }
-
-        return uvs;
     }
 }

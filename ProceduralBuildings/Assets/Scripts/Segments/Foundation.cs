@@ -12,65 +12,35 @@ public class Foundation : Segment
     public float addedDecorWidth;
 
 
-    public Foundation(Material material, Transform buildingParent, Base firstBase, Action<Vector3[]> verticesDebugger = null)
+    public Foundation(Material material, Transform parent, FoundationParams foundationParams,BaseParams firstFloor, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
 
-        baseObjSize = BaseObjSizes.baseSize;
-
-
-        finalSize = GetSize(firstBase.finalSize);
-        pos = GetPosition(firstBase, finalSize, false, false, false);
+        Vector3Int baseObjSize = foundationParams.baseObjSize;
 
         GenerateBaseCube(material, baseObjSize, name);
 
-        obj.transform.parent = firstBase.obj.transform;
+        obj.transform.parent = parent;
 
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
 
         Vector3[] vertices = mesh.vertices;
-        AlterCubeSize(finalSize, baseObjSize, ref vertices);
-        obj.transform.localPosition = pos;
+        AlterCubeSize(foundationParams.finalSize, baseObjSize, ref vertices);
+        obj.transform.localPosition = foundationParams.finalPos;
 
-        AddSidePilars(ref vertices, false, false, false,sideDecorWidth,sideDecorDepth,ref addedDecorWidth);
+        AddSidePilars(ref vertices, false, false, false, sideDecorWidth, sideDecorDepth, ref addedDecorWidth,
+            foundationParams.finalSize, baseObjSize, null);
         mesh.vertices = vertices;
-        mesh.uv = GenerateUVs(vertices.Length);
 
-        /*  int removeFrom = CalculateRingSize() * (baseObjSize.y + 1);
-          int removeTo = removeFrom + ((baseObjSize.x + 1) * (baseObjSize.z + 1)) - 1;
-          RemoveVerticesAndTriangles(removeFrom, removeTo);
-          */
+        int removeFrom = CalculateRingSize(baseObjSize) * (baseObjSize.y + 1)+((baseObjSize.x + 1) * (baseObjSize.z + 1));
+        int removeTo = removeFrom + ((baseObjSize.x + 1) * (baseObjSize.z + 1)) - 1;
+        RemoveVerticesAndTriangles(removeFrom, removeTo);
+
+        mesh = obj.GetComponent<MeshFilter>().sharedMesh;
+        vertices = mesh.vertices;
+        mesh.uv = GenerateUVs(vertices.Length, foundationParams.color);
+
     }
 
-    Vector3 GetSize(Vector3 lastFloorSize)
-    {
-        return new Vector3(lastFloorSize.x + 0.1f, lastFloorSize.y / 4, lastFloorSize.z +0.1f );
-    }
-    Vector3 GetPosition(Base lastBase, Vector3 currSize, bool leftFirewall, bool rightFirewall, bool backFirewall)
-    {
-        float x = (lastBase.finalSize.x - currSize.x) / 2;
-        float y = 0;
-        float z = (lastBase.finalSize.z - currSize.z) / 2;
-
-        if (leftFirewall)
-            x = 0;
-        if (rightFirewall)
-            x = (lastBase.finalSize.x - currSize.x);
-        if (backFirewall)
-            z = (lastBase.finalSize.z - currSize.z);
-
-        Vector3 finalPosition = new Vector3(x, y, z);
-        return finalPosition;
-    }
-    protected override Vector2[] GenerateUVs(int verticesLength)
-    {
-        Vector2 color = GetColorPosition(TextureColorIDs.grey);
-        Vector2[] uvs = new Vector2[verticesLength];
-        for (int i = 0; i < verticesLength; i++)
-        {
-            uvs[i] = color;
-        }
-
-        return uvs;
-    }
+   
 }

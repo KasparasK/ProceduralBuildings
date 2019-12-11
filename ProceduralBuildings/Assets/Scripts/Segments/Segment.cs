@@ -5,14 +5,9 @@ using UnityEngine;
 
 public abstract class Segment
 {
-    public Vector3 pos;
-    public Vector3 finalSize;
-    public Quaternion rot;
     public GameObject obj;
-    public List<Segment> attchedSegments;
     
     public Action<Vector3[]> verticesDebugger;
-    protected Vector3Int baseObjSize;
 
     private MeshGenerator meshGenerator;
 
@@ -20,7 +15,7 @@ public abstract class Segment
     protected const float textureColorSize = 32;
     protected const float textureOffset = textureColorSize / 2;
 
-    protected int CalculateRingSize()
+    protected int CalculateRingSize(Vector3Int baseObjSize)
     {
         return ((baseObjSize.x + 1) * 2) + ((baseObjSize.z + 1) * 2);
     }
@@ -61,7 +56,7 @@ public abstract class Segment
     //used just to evenly change cube dimensions
     protected void AlterCubeSize(Vector3 goalSize, Vector3Int baseCubeSize, ref Vector3[] vertices)
     {
-        int ring = CalculateRingSize();
+        int ring = CalculateRingSize(baseCubeSize);
 
         goalSize -= baseCubeSize;
 
@@ -169,16 +164,27 @@ public abstract class Segment
         }
     }
 
-    protected void AddSidePilars(ref Vector3[] vertices, bool backFirewall, bool leftFirewall, bool rightFirewall,float sideDecorWidth ,float sideDecorDepth,ref float addedDecorWidth, Base lastBase = null)
+    protected void AddSidePilars(
+        ref Vector3[] vertices,
+        bool backFirewall,
+        bool leftFirewall,
+        bool rightFirewall,
+        float sideDecorWidth ,
+        float sideDecorDepth,
+        ref float addedDecorWidth,
+        Vector3 finalSize,
+        Vector3Int baseObjSize,
+        BaseParams lastBaseParams)
     {
         if(baseObjSize.x != 5 && baseObjSize.z !=5)
             return;
 
-        int ring = CalculateRingSize();
+        int ring = CalculateRingSize(baseObjSize);
         int tempId = 0;
-        if (lastBase != null)
+
+        if (lastBaseParams != null)
         {
-            float diff = finalSize.z - lastBase.finalSize.z;
+            float diff = finalSize.z - lastBaseParams.finalSize.z;
             if (backFirewall)
             {
                 addedDecorWidth = sideDecorWidth > diff ? 0 : (diff);
@@ -189,7 +195,7 @@ public abstract class Segment
             }
 
             if (leftFirewall && rightFirewall)
-                addedDecorWidth += lastBase.addedDecorWidth;
+                addedDecorWidth += lastBaseParams.addedDecorWidth;
             else
                 addedDecorWidth = 0;
 
@@ -306,6 +312,7 @@ public abstract class Segment
         }
         for (int j = 0; j < 2; j++)
         {
+            Vector3 pos;
             //pirma eile
             tempId++; // = vertices.Length+1 - (baseObjSize.x + 1) * (baseObjSize.z + 1);
             pos = new Vector3(-sideDecorDepth, 0, -sideDecorDepth);
@@ -425,7 +432,17 @@ public abstract class Segment
     }
 
 
-    protected abstract Vector2[] GenerateUVs(int verticesLength);
+    protected Vector2[] GenerateUVs(int verticesLength,Vector2Int colorID)
+    {
+        Vector2 color = GetColorPosition(colorID);
+        Vector2[] uvs = new Vector2[verticesLength];
+        for (int i = 0; i < verticesLength; i++)
+        {
+            uvs[i] = color;
+        }
+
+        return uvs;
+    }
 
     protected void RemoveVerticesAndTriangles(int removeFrom, int removeTo)
     {

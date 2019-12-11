@@ -1,81 +1,38 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class Roof : Segment
 {
     private const string name = "roof";
+    public Roof(Material material, BaseParams lastBaseParams,RoofParams roofParams,Transform parent, Action<Vector3[]> verticesDebugger = null)
+   {
+       base.verticesDebugger = verticesDebugger;
+       Vector3Int baseObjSize = roofParams.baseObjSize;
 
-    private readonly Vector3Int minBaseSize = BaseObjSizes.roofSize;
-    const float zToAdd = 0.3f;
-    public Roof(Material material, Base parentBase,Attic attic ,Action<Vector3[]> verticesDebugger = null)
-    {
-        base.verticesDebugger = verticesDebugger;
-        baseObjSize = minBaseSize;
+       GenerateBaseCube(material, baseObjSize,name);
+       obj.transform.parent = parent;
+       AlterMesh(baseObjSize, lastBaseParams.finalSize, roofParams);
 
-        GenerateBaseCube(material, baseObjSize,name);
-        obj.transform.parent = parentBase.obj.transform;
-        AlterMesh(baseObjSize,parentBase.finalSize, attic.finalSize);
-        
-    }
+   }
 
-    void AlterMesh(Vector3Int baseCubeSize,Vector3 lastFloorSize, Vector3 atticSize)
-    {
-        Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
+   void AlterMesh(Vector3Int baseCubeSize,Vector3 lastFloorSize,RoofParams roofParams)
+   {
+       Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
 
-        Vector3[] vertices = mesh.vertices;
+       Vector3[] vertices = mesh.vertices;
 
-        int ring = CalculateRingSize();
-        finalSize = GetFinalSize(lastFloorSize, atticSize);
+       int ring = CalculateRingSize(baseCubeSize);
+      
+       AlterCubeSize(roofParams.finalSize, baseCubeSize,ref vertices);
+       BendRoof(roofParams.finalSize, lastFloorSize, ring, ref vertices);
 
-        AlterCubeSize(finalSize, baseCubeSize,ref vertices);
-        BendRoof(finalSize, lastFloorSize, ring, ref vertices);
-
-        mesh.vertices = vertices;
-        mesh.RecalculateNormals();
-        mesh.uv = GenerateUVs(vertices.Length);
-        pos = obj.transform.localPosition = GetFinalPosition(lastFloorSize, finalSize);
-    }
-    protected override Vector2[] GenerateUVs(int verticesLength)
-    {
-
-        Vector2[] uvs = new Vector2[verticesLength];
-        Vector2 color = GetColorPosition(TextureColorIDs.red);
-        for (int i = 0; i < verticesLength; i++)
-        {
-            uvs[i] = color;
-        }
-
-        return uvs;
-    }
-    Vector3 GetFinalPosition(Vector3 lastBaseSize, Vector3 currSize)
-    {
-
-        float x = 0;
-        float y = lastBaseSize.y ;
-        float z = (lastBaseSize.z - currSize.z  )/2;
-
-        Vector3 finalPosition = new Vector3(x, y, z);
-        return finalPosition;
-    }
-    float GetThicknessOfRoof()
-    {
-        return Random.Range(0.1f, 0.2f);
-    }
-
-    Vector3 GetFinalSize(Vector3 lastFloorSize, Vector3 atticSize)
-    {
-        float length = atticSize.z;
-        float halfY = atticSize.y;
-
-        float y = halfY * 2;
-
-        float z = length + zToAdd;
-
-        return  new Vector3(GetThicknessOfRoof(),y,z);
-    }
+       mesh.vertices = vertices;
+       mesh.RecalculateNormals();
+       mesh.uv = GenerateUVs(vertices.Length, roofParams.color);
+       obj.transform.localPosition = roofParams.finalPos;
+   }
+  
+  
 
     void BendRoof(Vector3 goalSize, Vector3 lastBaseSize, int ring, ref Vector3[] vertices)
     {

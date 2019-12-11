@@ -6,27 +6,16 @@ using UnityEngine;
 public class Segmentation : Segment
 {
     private const string name = "segments";
-    public Segmentation(GameObject parentObj ,Vector3 winSize, Vector3 segmentDimensions, Material material, List<Vector3> vertSegPositions, List<Vector3> horSegPositions, Action<Vector3[]> verticesDebugger = null)
+    public Segmentation(GameObject parentObj ,Vector3 winSize, Vector3 segmentDimensions, Material material, List<Vector3> vertSegPositions, List<Vector3> horSegPositions,Vector2Int color, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
-        baseObjSize = new Vector3Int(1, 1, 1);
 
-        GenerateSegements(parentObj, winSize, material, vertSegPositions, horSegPositions, segmentDimensions);
+        GenerateSegements(parentObj, winSize, material, vertSegPositions, horSegPositions, segmentDimensions,color);
     }
-    protected override Vector2[] GenerateUVs(int verticesLength)
-    {
-        Vector2[] uvs = new Vector2[verticesLength];
-        Vector2 color = GetColorPosition(TextureColorIDs.darkBrown);
-        for (int i = 0; i < verticesLength; i++)
-        {
-            uvs[i] = color;
-        }
-
-        return uvs;
-    }
-    void GenerateSegements(GameObject parentObj, Vector3 winSize, Material material, List<Vector3> vertSegPositions, List<Vector3> horSegPositions,Vector3 segmentDimensions)
+    void GenerateSegements(GameObject parentObj, Vector3 winSize, Material material, List<Vector3> vertSegPositions, List<Vector3> horSegPositions,Vector3 segmentDimensions, Vector2Int color)
     {
         List<GameObject> objs = new List<GameObject>();
+        Vector3Int baseObjSize = BaseObjSizes.segmentationSize;
 
         for (int i = 0; i < horSegPositions.Count; i++)
         {
@@ -41,7 +30,7 @@ public class Segmentation : Segment
 
             mesh.vertices = vertices;
             obj.transform.parent = parentObj.transform;
-            mesh.uv = GenerateUVs(vertices.Length);
+            mesh.uv = GenerateUVs(vertices.Length, color);
             obj.transform.localPosition = horSegPositions[i];
             obj.transform.localRotation = Quaternion.Euler(Vector3.zero);
 
@@ -63,7 +52,7 @@ public class Segmentation : Segment
 
             mesh.vertices = vertices;
             obj.transform.parent = parentObj.transform;
-            mesh.uv = GenerateUVs(vertices.Length);
+            mesh.uv = GenerateUVs(vertices.Length, color);
 
             obj.transform.localPosition = vertSegPositions[i];
             obj.transform.localRotation = Quaternion.Euler(Vector3.zero);

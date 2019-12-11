@@ -7,78 +7,42 @@ public class Attic : Segment
 {
     private const string name = "attic";
 
-    public Attic(Material material, Base parentBase, Action<Vector3[]> verticesDebugger = null)
+    public Attic(Material material, AtticParams atticParams,Transform parent, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
-        baseObjSize = BaseObjSizes.atticSize;
+        Vector3Int baseObjSize = BaseObjSizes.atticSize;
 
         GenerateBaseCube(material, baseObjSize,name);
-        obj.transform.parent = parentBase.obj.transform;
-        AlterMesh(parentBase.finalSize);
+        obj.transform.parent = parent;
+        AlterMesh(atticParams);
     }
 
-    void AlterMesh(Vector3 lastFloorSize)
+    void AlterMesh(AtticParams atticParams)
     {
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         Vector3[] vertices = mesh.vertices;
 
-        finalSize = GetFinalSize(lastFloorSize);
+        Vector3Int baseObjSize = atticParams.baseObjSize;
 
-        AlterCubeSize(finalSize, baseObjSize, ref vertices);
-        FormAttic(finalSize, lastFloorSize, ref vertices);
+        AlterCubeSize(atticParams.finalSize, baseObjSize, ref vertices);
+        FormAttic(atticParams.finalSize,baseObjSize, ref vertices);
         mesh.vertices = vertices;
 
-        int removeFrom = CalculateRingSize() * (baseObjSize.y + 1);
+        int removeFrom = CalculateRingSize(baseObjSize) * (baseObjSize.y + 1);
         int removeTo = removeFrom + ((baseObjSize.x + 1) * (baseObjSize.z + 1)) - 1;
         RemoveVerticesAndTriangles(removeFrom, removeTo);
         mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         vertices = mesh.vertices;
-        mesh.uv = GenerateUVs(vertices.Length);
+        mesh.uv = GenerateUVs(vertices.Length,atticParams.color);
 
         //  VisualiseVertices(mesh.vertices);
-        pos = obj.transform.localPosition = GetFinalPosition(lastFloorSize, finalSize);
-    }
-
-    protected override Vector2[] GenerateUVs(int verticesLength)
-    {
-        Vector2[] uvs = new Vector2[verticesLength];
-        Vector2 wallsColor = GetColorPosition(TextureColorIDs.yellow);
-        for (int i = 0; i < verticesLength; i++)
-        {
-            uvs[i] = wallsColor;
-        }
-
-        return uvs;
-    }
-
-    Vector3 GetFinalPosition(Vector3 lastBaseSize, Vector3 currSize)
-    {
-
-        float x = 0;
-        float y = lastBaseSize.y;
-        float z = (lastBaseSize.z - currSize.z) / 2;
-
-        Vector3 finalPosition = new Vector3(x, y, z);
-        return finalPosition;
-    }
-
-    Vector3 GetFinalSize(Vector3 lastFloorSize)
-    {
-
-        Vector3 finalSize = new Vector3(
-            lastFloorSize.x,
-            UnityEngine.Random.Range(lastFloorSize.x/2.5f, lastFloorSize.x*0.9f),
-            lastFloorSize.z
-        );
-
-        return finalSize;
-
+        obj.transform.localPosition = atticParams.finalPos;
     }
 
 
-    void FormAttic(Vector3 goalSize, Vector3 lastBaseSize, ref Vector3[] vertices)
+    void FormAttic(Vector3 goalSize,Vector3Int baseObjSize, ref Vector3[] vertices)
     {
-        int ring = CalculateRingSize();
+        int ring = CalculateRingSize(baseObjSize);
         goalSize.x /= -2;
 
         Vector3 sizeToAdd = Vector3.zero;

@@ -6,41 +6,30 @@ using UnityEngine;
 public class SquareOpening : Segment
 {
     private const string name = "squareOpening";
-    private Vector2Int color;
     public SquareOpening(Vector3 goalSize, Material material,Vector3 winFrameDimensions, Vector2Int color, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
-        baseObjSize = BaseObjSizes.openingSqSize;
+        Vector3Int baseObjSize = BaseObjSizes.openingSqSize;
         GenerateBaseCube(material, baseObjSize, name);
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
-        this.color = color;
+
         Vector3[] vertices = mesh.vertices;
 
         AlterCubeSize(new Vector3(winFrameDimensions.x, goalSize.y*baseObjSize.y, winFrameDimensions.z), baseObjSize,ref vertices);
-        SquareUp(goalSize,ref vertices, winFrameDimensions.x);
+        SquareUp(goalSize,ref vertices, winFrameDimensions.x, baseObjSize);
 
         mesh.vertices = vertices;
-        mesh.uv = GenerateUVs(vertices.Length);
 
-        RemoveVerticesAndTriangles(CalculateRingSize()*(baseObjSize.y+1),vertices.Length-1);
+        RemoveVerticesAndTriangles(CalculateRingSize(baseObjSize) *(baseObjSize.y+1),vertices.Length-1);
+        mesh = obj.GetComponent<MeshFilter>().sharedMesh;
+        mesh.vertices = vertices;
+        mesh.uv = GenerateUVs(vertices.Length, color);
 
     }
 
-    protected override Vector2[] GenerateUVs(int verticesLength)
+    void SquareUp(Vector3 goalSize, ref Vector3[] vertices,float xSize,Vector3Int baseObjSize)
     {
-        Vector2[] uvs = new Vector2[verticesLength];
-        Vector2 wallsColor = GetColorPosition(color);
-        for (int i = 0; i < verticesLength; i++)
-        {
-            uvs[i] = wallsColor;
-        }
-
-        return uvs;
-    }
-
-    void SquareUp(Vector3 goalSize, ref Vector3[] vertices,float xSize)
-    {
-        int ring = CalculateRingSize();
+        int ring = CalculateRingSize(baseObjSize);
         int tempId = baseObjSize.x;
 
         Vector3 posToAdd = new Vector3(0,xSize,0);

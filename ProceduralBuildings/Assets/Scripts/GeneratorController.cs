@@ -23,9 +23,10 @@ public class GeneratorController : MonoBehaviour
     private double endTime;
     public void Generate()
     {
-       
+        startTime = EditorApplication.timeSinceStartup;
 
-        if(parentObj != null)
+
+        if (parentObj != null)
             DestroyImmediate(parentObj);
 
         parentObj = new GameObject();
@@ -33,6 +34,8 @@ public class GeneratorController : MonoBehaviour
         parentObj.name = "Building";
 
         Building building = new Building(minStoriesCount, maxStoriesCount, this, VertexVisualiser);
+        endTime = EditorApplication.timeSinceStartup;
+        Debug.Log("Generation finished. Duration: " + (endTime - startTime) * 1000 + " ms");
 
     }
 

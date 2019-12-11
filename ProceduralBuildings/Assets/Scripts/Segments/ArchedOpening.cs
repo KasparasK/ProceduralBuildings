@@ -4,34 +4,34 @@ using UnityEngine;
 public class ArchedOpening : Segment
 {
     private const string name = "archedOpening";
-    private Vector2Int color;
 
 
     public ArchedOpening(Vector3 goalSize, Material material, Vector3 winFrameDimensions, Vector2Int color, WindowParams winParams, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
-        baseObjSize = BaseObjSizes.openingArcSize;
+        Vector3Int baseObjSize = BaseObjSizes.openingArcSize;
         GenerateBaseCube(material, baseObjSize, name);
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
-        this.color = color;
         Vector3[] vertices = mesh.vertices;
 
         AlterCubeSize(new Vector3(winFrameDimensions.x, goalSize.y * baseObjSize.y, winFrameDimensions.z), baseObjSize, ref vertices);
-        AlterMesh(goalSize, winFrameDimensions, winParams, ref vertices);
+        AlterMesh(goalSize, winFrameDimensions, winParams, ref vertices, baseObjSize);
        // SquareUp(goalSize, ref vertices, winFrameDimensions.x);
 
         mesh.vertices = vertices;
-        mesh.uv = GenerateUVs(vertices.Length);
 
-        RemoveVerticesAndTriangles(CalculateRingSize() * (baseObjSize.y + 1), vertices.Length - 1);
+        RemoveVerticesAndTriangles(CalculateRingSize(baseObjSize) * (baseObjSize.y + 1), vertices.Length - 1);
+        mesh = obj.GetComponent<MeshFilter>().sharedMesh;
+        mesh.vertices = vertices;
+        mesh.uv = GenerateUVs(vertices.Length, color);
 
     }
 
-    void AlterMesh(Vector3 goalSize, Vector3 winFrameDimensions, WindowParams winParams, ref Vector3[] vertices)
+    void AlterMesh(Vector3 goalSize, Vector3 winFrameDimensions, WindowParams winParams, ref Vector3[] vertices,Vector3Int baseObjSize)
     {
         int arcPoints = baseObjSize.y - 3;
 
-        int ring = CalculateRingSize();
+        int ring = CalculateRingSize(baseObjSize);
         int tempId = baseObjSize.x;
 
         Vector3 posToAdd = new Vector3(0, winFrameDimensions.x, 0);
@@ -106,17 +106,5 @@ public class ArchedOpening : Segment
         }
         //---------------------------------
 
-    }
-
-    protected override Vector2[] GenerateUVs(int verticesLength)
-    {
-        Vector2[] uvs = new Vector2[verticesLength];
-        Vector2 color = GetColorPosition( this.color);
-        for (int i = 0; i < verticesLength; i++)
-        {
-            uvs[i] = color;
-        }
-
-        return uvs;
     }
 }

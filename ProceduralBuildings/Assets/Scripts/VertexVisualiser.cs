@@ -55,7 +55,7 @@ public class VertexVisualiser : Editor
             for (int i = 0; i < mesh.vertexCount; i++)
             {
                 Handles.matrix = (target as MeshFilter).transform.localToWorldMatrix;
-                Handles.color = Color.yellow;
+                Handles.color = Color.orange;
                 Handles.DrawLine(
                     mesh.vertices[i],
                     mesh.vertices[i] + mesh.normals[i]);
