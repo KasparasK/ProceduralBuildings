@@ -9,7 +9,7 @@ public class WindowsGenerator : MonoBehaviour
     private readonly Vector3 minWinDimensions = new Vector3(0.4f, 0.5f, 0.1f);
     private readonly Vector3 maxWinDimensions = new Vector3(0.7f, 0.9f, 0.2f);
 
-    private readonly Vector3 winFrameDimensions = new Vector3(0.05f, 0.05f, 0.1f);
+    private readonly Vector3 frameDimensions = new Vector3(0.05f, 0.05f, 0.1f);
 
     private readonly Vector3 segmentDimensions = new Vector3(0.04f, 0.04f, 0.04f);
 
@@ -38,25 +38,33 @@ public class WindowsGenerator : MonoBehaviour
 
         GenerateSegmentsPositions(finalSize);
 
+        bool rowSameLit = true;
+        Vector2Int glassColor = RandomiseWindowColor();
+
         for (int i = 0; i < positions.Count; i++)
         {
             WindowParams windowParam = new WindowParams();
 
-            windowParam.angle = angle;
-            windowParam.vertSegPositions = vertSegPositions;
-            windowParam.horSegPositions = horSegPositions;
-            windowParam.outerArcB = outerArcB;
-            windowParam.outerArcF = outerArcF;
-            windowParam.innerArcB = innerArcB;
-            windowParam.innerArcF = innerArcF;
+            if(rowSameLit)
+            glassColor = RandomiseWindowColor();
+
+            if (baseParams.windowStyle == OpeningStyle.ARCH)
+            {
+                windowParam.archedOpeningParams = new ArchedOpeningParams(outerArcF, outerArcB, innerArcF, innerArcB, frameDimensions);
+                windowParam.glassParams = new PlaneParams(baseParams.windowStyle,glassColor,BaseObjSizes.planeArcSize,innerArcF, finalSize, windowOffset);
+            }
+            else
+            {
+                windowParam.squareOpeningParams = new SquareOpeningParams(frameDimensions);
+                windowParam.glassParams = new PlaneParams(baseParams.windowStyle, glassColor, BaseObjSizes.planeSqSize, finalSize, windowOffset);
+
+            }
+
+            windowParam.segmentationParams = new SegmentationParams(vertSegPositions, horSegPositions, segmentDimensions);
             windowParam.finalSize = finalSize;
             windowParam.finalPos = positions[i];
-            windowParam.rot = rotations[i];
-            windowParam.segmentDimensions = segmentDimensions;
-            windowParam.winFrameDimensions = winFrameDimensions;
-            windowParam.windowOffset = windowOffset;
+            windowParam.finalRot = rotations[i];
             windowParam.openingStyle = baseParams.windowStyle;
-            windowParam.glassColor = RandomiseWindowColor();
             windowParams.Add(windowParam);
         }
 
@@ -205,8 +213,8 @@ public class WindowsGenerator : MonoBehaviour
         vertSegPositions = new List<Vector3>();
         horSegPositions = new List<Vector3>();
 
-        float height = winSize.y - winFrameDimensions.y * 2;
-        float width = winSize.x - winFrameDimensions.x * 2;
+        float height = winSize.y - frameDimensions.y * 2;
+        float width = winSize.x - frameDimensions.x * 2;
 
         float verticalGap = Random.Range(minDistanceBetweenSegments, maxDistanceBetweenSegments);
         float horizontalGap = Random.Range(verticalGap, maxDistanceBetweenSegments);
@@ -238,7 +246,7 @@ public class WindowsGenerator : MonoBehaviour
 
 
         DistributePositionsEvenly(
-            new Vector3(winFrameDimensions.x, 0, 0),
+            new Vector3(frameDimensions.x, 0, 0),
             addBefore,
             addAfter,
             verticalCount,
@@ -254,12 +262,12 @@ public class WindowsGenerator : MonoBehaviour
         int arcPoints = BaseObjSizes.openingArcSize.y - 3;
 
         outerArcF = arcGenerator.GenerationZwei(angle, winSize.x, new Vector3(0, winSize.y, 0), arcPoints);
-        outerArcB = arcGenerator.GenerationZwei(angle, winSize.x, new Vector3(0, winSize.y, winFrameDimensions.z), arcPoints);
+        outerArcB = arcGenerator.GenerationZwei(angle, winSize.x, new Vector3(0, winSize.y, frameDimensions.z), arcPoints);
 
-        float addX = (winSize.x - (winSize.x - winFrameDimensions.x * 2)) / 2;
+        float addX = (winSize.x - (winSize.x - frameDimensions.x * 2)) / 2;
 
-        innerArcF = arcGenerator.GenerationZwei(angle, winSize.x - winFrameDimensions.x * 2, new Vector3(addX, winSize.y, 0), arcPoints);
-        innerArcB = arcGenerator.GenerationZwei(angle, winSize.x - winFrameDimensions.x * 2, new Vector3(addX, winSize.y, winFrameDimensions.z), arcPoints);
+        innerArcF = arcGenerator.GenerationZwei(angle, winSize.x - frameDimensions.x * 2, new Vector3(addX, winSize.y, 0), arcPoints);
+        innerArcB = arcGenerator.GenerationZwei(angle, winSize.x - frameDimensions.x * 2, new Vector3(addX, winSize.y, frameDimensions.z), arcPoints);
 
         float arcHeight = outerArcB[arcPoints / 2 - 1].y - outerArcB[0].y;
 

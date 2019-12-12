@@ -13,22 +13,19 @@ public class Window
     )
     {
         if(winParams.openingStyle == OpeningStyle.ARCH)
-            openingBase = new ArchedOpening(winParams.finalSize, material, winParams.winFrameDimensions,winParams.frameColor, winParams); 
+            openingBase = new ArchedOpening(winParams.finalSize, material, winParams.archedOpeningParams); 
         else
-            openingBase = new SquareOpening(winParams.finalSize, material, winParams.winFrameDimensions, winParams.frameColor);
+            openingBase = new SquareOpening(winParams.finalSize, material, winParams.squareOpeningParams);
 
         openingBase.obj.transform.parent = parent;
         openingBase.obj.transform.localPosition = winParams.finalPos;
-        openingBase.obj.transform.localRotation = winParams.rot;
+        openingBase.obj.transform.localRotation = winParams.finalRot;
 
-        segmentation = new Segmentation(openingBase.obj, winParams.finalSize, winParams.segmentDimensions, material, winParams.vertSegPositions, winParams.horSegPositions, winParams.segmentsColor);
-        if (winParams.openingStyle == OpeningStyle.ARCH)
-            glass = new Plane(material, openingBase.obj.transform, winParams.finalSize, winParams.glassColor, winParams.innerArcF);
-        else
-            glass = new Plane(material, openingBase.obj.transform, winParams.finalSize, winParams.glassColor);
+        segmentation = new Segmentation(openingBase.obj.transform, winParams.finalSize, material, winParams.segmentationParams);
 
-        glass.obj.transform.localPosition = new Vector3(winParams.finalSize.x, 0, winParams.windowOffset+0.01f);
-        glass.obj.transform.localRotation = Quaternion.Euler(new Vector3(0,180,0));
+        glass = new Plane(material, openingBase.obj.transform, winParams.finalSize,winParams.glassParams);
+        glass.obj.transform.localPosition = winParams.glassParams.finalPos;
+        glass.obj.transform.localRotation = winParams.glassParams.finalRot;
 
 
     }

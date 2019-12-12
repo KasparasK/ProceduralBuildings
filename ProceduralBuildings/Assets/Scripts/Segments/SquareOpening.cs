@@ -6,7 +6,7 @@ using UnityEngine;
 public class SquareOpening : Segment
 {
     private const string name = "squareOpening";
-    public SquareOpening(Vector3 goalSize, Material material,Vector3 winFrameDimensions, Vector2Int color, Action<Vector3[]> verticesDebugger = null)
+    public SquareOpening(Vector3 goalSize, Material material,SquareOpeningParams squareOpeningParams , Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = BaseObjSizes.openingSqSize;
@@ -15,15 +15,15 @@ public class SquareOpening : Segment
 
         Vector3[] vertices = mesh.vertices;
 
-        AlterCubeSize(new Vector3(winFrameDimensions.x, goalSize.y*baseObjSize.y, winFrameDimensions.z), baseObjSize,ref vertices);
-        SquareUp(goalSize,ref vertices, winFrameDimensions.x, baseObjSize);
+        AlterCubeSize(new Vector3(squareOpeningParams.frameDimensions.x, goalSize.y*baseObjSize.y, squareOpeningParams.frameDimensions.z), baseObjSize,ref vertices);
+        SquareUp(goalSize,ref vertices, squareOpeningParams.frameDimensions.x, baseObjSize);
 
         mesh.vertices = vertices;
 
         RemoveVerticesAndTriangles(CalculateRingSize(baseObjSize) *(baseObjSize.y+1),vertices.Length-1);
         mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         mesh.vertices = vertices;
-        mesh.uv = GenerateUVs(vertices.Length, color);
+        mesh.uv = GenerateUVs(vertices.Length, squareOpeningParams.frameColor);
 
     }
 
