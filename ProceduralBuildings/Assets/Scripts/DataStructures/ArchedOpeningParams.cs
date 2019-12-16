@@ -10,7 +10,7 @@ public class ArchedOpeningParams : SegmentParams
     public Vector3[] innerArcB;
     public Vector3 frameDimensions;
 
-    public Vector2Int frameColor = TextureColorIDs.red;
+    public Vector2Int frameColor = TextureColorIDs.lightBrown;
 
     public ArchedOpeningParams(Vector3[] outerArcF, Vector3[] outerArcB, Vector3[] innerArcF, Vector3[] innerArcB, Vector3 frameDimensions)
     {

@@ -6,7 +6,7 @@ public class ArchedOpening : Segment
     private const string name = "archedOpening";
 
 
-    public ArchedOpening(Vector3 goalSize, Material material, ArchedOpeningParams archedOpeningParams, Action<Vector3[]> verticesDebugger = null)
+    public ArchedOpening(Vector3 goalSize, Material material, ArchedOpeningParams archedOpeningParams , Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = BaseObjSizes.openingArcSize;
@@ -42,7 +42,7 @@ public class ArchedOpening : Segment
         }
         //---------------------------------
         tempId = ring;
-        for (int i = 0; i <= arcPoints; i++)
+       for (int i = 0; i <= arcPoints; i++)
         {
             SetVertexPosition(ref vertices[tempId], archedOpeningParams.outerArcF[i]);
             tempId++;

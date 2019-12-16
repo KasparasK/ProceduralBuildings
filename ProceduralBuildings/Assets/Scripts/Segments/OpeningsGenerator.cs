@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class WindowsGenerator : MonoBehaviour
+public class OpeningsGenerator : MonoBehaviour
 {
     private const float minDistanceBetweenWindows = 0.2f;
     private const float maxDistanceBetweenWindows = 0.5f;
@@ -17,6 +17,10 @@ public class WindowsGenerator : MonoBehaviour
     private const float maxDistanceBetweenSegments = 0.2f;
     private const float windowOffset = 0.02f; //kiek islindes
 
+    private readonly float minDoorX = 0.5f;
+    private readonly float maxDoorX = 0.9f;
+
+
     private List<Vector3> vertSegPositions;
     private List<Vector3> horSegPositions;
     private float angle;
@@ -24,22 +28,51 @@ public class WindowsGenerator : MonoBehaviour
     private Vector3[] outerArcB;
     private Vector3[] innerArcF;
     private Vector3[] innerArcB;
-    public List<WindowParams> GenerateWindows(BaseParams baseParams)
+    public void GenerateOpenings(BaseParams baseParams,ref List<WindowParams> windowParams,ref DoorParams doorParams)
     {
         List<Quaternion> rotations = new List<Quaternion>();
         List<Vector3> positions = new List<Vector3>();
-        List<WindowParams> windowParams = new List<WindowParams>();
 
         Vector3 finalSize = RandomiseWindowSize(baseParams.finalSize);
         GenerateWindowsPositions(baseParams.finalSize, finalSize, baseParams.leftFirewall, baseParams.rightFirewall, baseParams.backFirewall, ref positions, ref rotations);
 
-        if (baseParams.windowStyle == OpeningStyle.ARCH)
-            GenerateArcParameters(finalSize);
+      //  if (baseParams.windowStyle == OpeningStyle.ARCH || baseParams.doorStyle == OpeningStyle.ARCH)
 
-        GenerateSegmentsPositions(finalSize);
 
         bool rowSameLit = true;
         Vector2Int glassColor = RandomiseWindowColor();
+
+        if (baseParams.groundFloor)
+        {
+            int r = Random.Range(0, positions.Count);
+
+            Vector3 doorFinalSize = new Vector3(finalSize.x, finalSize.y + positions[r].y, finalSize.z);
+            GenerateArcParameters(doorFinalSize);
+
+
+            doorParams.finalPos = new Vector3(positions[r].x, 0, positions[r].z);
+            doorParams.finalSize = doorFinalSize;
+            doorParams.finalRot = rotations[r];
+
+            doorParams.openingStyle = baseParams.doorStyle;
+
+            if (baseParams.doorStyle == OpeningStyle.ARCH)
+            {
+                doorParams.archedOpeningParams = new ArchedOpeningParams(outerArcF, outerArcB, innerArcF, innerArcB, frameDimensions);
+                doorParams.planeParams = new PlaneParams(baseParams.doorStyle, TextureColorIDs.darkBrown, BaseObjSizes.planeArcSize, innerArcF, doorFinalSize, windowOffset);
+            }
+            else
+            {
+                doorParams.squareOpeningParams = new SquareOpeningParams(frameDimensions);
+                doorParams.planeParams = new PlaneParams(baseParams.doorStyle, TextureColorIDs.darkBrown, BaseObjSizes.planeSqSize, doorFinalSize, windowOffset);
+
+            }
+
+            positions.RemoveAt(r);
+            rotations.RemoveAt(r);
+        }
+        GenerateArcParameters(finalSize);
+        GenerateSegmentsPositions(finalSize);
 
         for (int i = 0; i < positions.Count; i++)
         {
@@ -67,8 +100,6 @@ public class WindowsGenerator : MonoBehaviour
             windowParam.openingStyle = baseParams.windowStyle;
             windowParams.Add(windowParam);
         }
-
-        return windowParams;
     }
 
     Vector2Int RandomiseWindowColor()
@@ -90,7 +121,7 @@ public class WindowsGenerator : MonoBehaviour
     {
         return new Vector3(
                 Random.Range(minWinDimensions.x, maxWinDimensions.x),
-                Random.Range(baseSize.y / 2, baseSize.y - (baseSize.y / 2.5f)),//baseSize.y > maxWinDimensions.y? maxWinDimensions.y: baseSize.y
+                Random.Range(baseSize.y / 2, baseSize.y - (baseSize.y / 2.5f)),
                 Random.Range(minWinDimensions.z, maxWinDimensions.z)
 
             );

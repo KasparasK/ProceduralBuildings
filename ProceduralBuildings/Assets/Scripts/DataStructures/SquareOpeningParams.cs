@@ -5,7 +5,7 @@ using UnityEngine;
 public class SquareOpeningParams : SegmentParams
 {
     public Vector3 frameDimensions;
-    public Vector2Int frameColor = TextureColorIDs.red;
+    public Vector2Int frameColor = TextureColorIDs.lightBrown;
 
     public SquareOpeningParams(Vector3 frameDimensions)
     {

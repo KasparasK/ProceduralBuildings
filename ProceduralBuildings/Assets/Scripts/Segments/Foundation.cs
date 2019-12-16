@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Foundation : Segment
@@ -12,7 +10,7 @@ public class Foundation : Segment
     public float addedDecorWidth;
 
 
-    public Foundation(Material material, Transform parent, FoundationParams foundationParams,BaseParams firstFloor, Action<Vector3[]> verticesDebugger = null)
+    public Foundation(Material material, Transform parent, FoundationParams foundationParams, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
 

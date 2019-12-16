@@ -22,6 +22,8 @@ public class Building
     public Foundation foundation;
     private FoundationParams foundationParams;
 
+    private Door door;
+
     private int floorCount;
     public Building(int minStoriesCount, int maxStoriesCount, GeneratorController generatorController, VertexVisualiser vertexVisualiser)
     {
@@ -29,20 +31,28 @@ public class Building
         floors = new Base[floorCount];
         baseParams = new BaseParams[floorCount];
 
-        WindowsGenerator windowsGenerator = new WindowsGenerator();
+        OpeningsGenerator openingsGenerator = new OpeningsGenerator();
+
+        foundationParams = new FoundationParams();
+        foundation = new Foundation(
+            generatorController.mainMaterial,
+            generatorController.parentObj.transform,
+            foundationParams
+        );
 
         for (int i = 0; i < floorCount; i++)
         {
             if (i == 0)
             {
                 baseParams[i] = new BaseParams(
+                    foundationParams.finalSize,
                     generatorController.leftFirewall,
                     generatorController.rightFirewall,
                     generatorController.backFirewall,
                     RandomizeOpeningStyle(),
                     RandomizeOpeningStyle());
 
-                floors[i] = new Base(ref baseParams[i], generatorController.parentObj.transform, generatorController.mainMaterial,null ,vertexVisualiser.VisualiseVertices);
+                floors[i] = new Base(ref baseParams[i], foundation.obj.transform, generatorController.mainMaterial,null ,vertexVisualiser.VisualiseVertices);
               
             }
             else
@@ -53,25 +63,25 @@ public class Building
                     generatorController.rightFirewall,
                     generatorController.backFirewall,
                     RandomizeOpeningStyle());
+
                 floors[i] = new Base(ref baseParams[i], floors[i-1].obj.transform, generatorController.mainMaterial, baseParams[i-1], vertexVisualiser.VisualiseVertices);
 
             }
 
-            List<WindowParams> winParams = windowsGenerator.GenerateWindows(baseParams[i]);
+            List<WindowParams> winParams = new List<WindowParams>();
+            DoorParams doorParams = new DoorParams();
+            openingsGenerator.GenerateOpenings(baseParams[i],ref winParams,ref doorParams);
             floors[i].windows = new List<Window>();
             for (int j = 0; j < winParams.Count; j++)
             {
                 floors[i].windows.Add(new Window(floors[i].obj.transform, generatorController.mainMaterial, winParams[j]));
             }
 
+           if(baseParams[i].groundFloor)
+               door = new Door(floors[i].obj.transform, generatorController.mainMaterial,doorParams);
+
         }
-        foundationParams = new FoundationParams(baseParams[0]);
-        foundation = new Foundation(
-            generatorController.mainMaterial, 
-            generatorController.parentObj.transform,
-            foundationParams,
-            baseParams[0]
-            );
+     
 
         atticParams = new AtticParams(baseParams[floorCount-1].finalSize);
         attic = new Attic(
