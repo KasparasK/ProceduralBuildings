@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 public static class BaseObjSizes
 {
@@ -11,5 +10,6 @@ public static class BaseObjSizes
    public static readonly Vector3Int planeSqSize = new Vector3Int(1, 1, 0);
    public static readonly Vector3Int planeArcSize = new Vector3Int(openingArcSize.y-3, 1, 0);
    public static readonly Vector3Int segmentationSize = new Vector3Int(1, 1, 1);
+   public static readonly Vector3Int chimneySize = new Vector3Int(1, 3, 1);
 
 }

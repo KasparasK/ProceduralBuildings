@@ -22,6 +22,9 @@ public class Building
     public Foundation foundation;
     private FoundationParams foundationParams;
 
+    private Chimney chimney;
+    private ChimneyParams chimneyParams;
+
     private Door door;
 
     private int floorCount;
@@ -98,7 +101,8 @@ public class Building
             floors[floorCount - 1].obj.transform,
             vertexVisualiser.VisualiseVertices);
 
-
+        chimneyParams = new ChimneyParams(roofParams, baseParams[floorCount - 1]);
+        chimney = new Chimney(chimneyParams, generatorController.mainMaterial, roof.obj.transform);
     }
 
     int RandomizeFloorCount(int from, int to)
