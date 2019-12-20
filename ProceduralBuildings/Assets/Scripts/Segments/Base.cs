@@ -33,7 +33,7 @@ public class Base : Segment
             lastBaseParams);
         mesh.vertices = vertices;
 
-        if (baseParams.groundFloor)
+        if (baseParams.floorNum == 0)
         {
             int removeFrom = CalculateRingSize(baseObjSize) * (baseObjSize.y + 1) + ((baseObjSize.x + 1) * (baseObjSize.z + 1));
             int removeTo = removeFrom + ((baseObjSize.x + 1) * (baseObjSize.z + 1)) - 1;

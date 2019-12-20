@@ -42,6 +42,7 @@ public class Attic : Segment
 
     void FormAttic(Vector3 goalSize,Vector3Int baseObjSize, ref Vector3[] vertices)
     {
+
         int ring = CalculateRingSize(baseObjSize);
         goalSize.x /= -2;
 

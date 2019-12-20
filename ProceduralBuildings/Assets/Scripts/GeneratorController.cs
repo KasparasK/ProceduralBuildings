@@ -8,9 +8,10 @@ public class GeneratorController : MonoBehaviour
 {
     public string path;
 
-    public Material mainMaterial;
+    public Material material;
 
     public bool leftFirewall, rightFirewall, backFirewall;
+    public bool rowSameLit;
 
     public GameObject parentObj;
 
@@ -33,7 +34,7 @@ public class GeneratorController : MonoBehaviour
         parentObj.transform.position= Vector3.zero;
         parentObj.name = "Building";
 
-        Building building = new Building(minStoriesCount, maxStoriesCount, this, VertexVisualiser);
+        Building building = new Building(minStoriesCount, maxStoriesCount, leftFirewall,rightFirewall,backFirewall, material, parentObj.transform,rowSameLit, VertexVisualiser);
         endTime = EditorApplication.timeSinceStartup;
         Debug.Log("Generation finished. Duration: " + (endTime - startTime) * 1000 + " ms");
 
@@ -55,7 +56,7 @@ public class GeneratorController : MonoBehaviour
             parentObj.transform.position = Vector3.zero;
             parentObj.name = "Building";
 
-            Building building = new Building(3, 3, this, VertexVisualiser);
+            Building building = new Building(minStoriesCount, maxStoriesCount, leftFirewall, rightFirewall, backFirewall, material, parentObj.transform, rowSameLit, VertexVisualiser);
             endTime = EditorApplication.timeSinceStartup;
 
             totalTime += (endTime - startTime);

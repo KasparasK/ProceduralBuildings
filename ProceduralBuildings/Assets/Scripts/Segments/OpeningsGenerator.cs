@@ -28,21 +28,22 @@ public class OpeningsGenerator : MonoBehaviour
     private Vector3[] outerArcB;
     private Vector3[] innerArcF;
     private Vector3[] innerArcB;
-    public void GenerateOpenings(BaseParams baseParams,ref List<WindowParams> windowParams,ref DoorParams doorParams)
+    public void GenerateOpenings(BaseParams baseParams,ref List<WindowParams> windowParams,ref DoorParams doorParams,bool rowSameLit,Vector3 ?lastFloorWinSize = null)
     {
         List<Quaternion> rotations = new List<Quaternion>();
         List<Vector3> positions = new List<Vector3>();
+        Vector3 finalSize;
 
-        Vector3 finalSize = RandomiseWindowSize(baseParams.finalSize);
+        if (baseParams.floorNum < 2)
+            finalSize = RandomiseWindowSize(baseParams.finalSize);
+        else
+            finalSize = (Vector3)lastFloorWinSize;
+
         GenerateWindowsPositions(baseParams.finalSize, finalSize, baseParams.leftFirewall, baseParams.rightFirewall, baseParams.backFirewall, ref positions, ref rotations);
 
-      //  if (baseParams.windowStyle == OpeningStyle.ARCH || baseParams.doorStyle == OpeningStyle.ARCH)
-
-
-        bool rowSameLit = true;
         Vector2Int glassColor = RandomiseWindowColor();
 
-        if (baseParams.groundFloor)
+        if (baseParams.floorNum == 0)
         {
             int r = Random.Range(0, positions.Count);
 
@@ -71,6 +72,7 @@ public class OpeningsGenerator : MonoBehaviour
             positions.RemoveAt(r);
             rotations.RemoveAt(r);
         }
+
         GenerateArcParameters(finalSize);
         GenerateSegmentsPositions(finalSize);
 
@@ -78,7 +80,7 @@ public class OpeningsGenerator : MonoBehaviour
         {
             WindowParams windowParam = new WindowParams();
 
-            if(rowSameLit)
+            if(!rowSameLit)
             glassColor = RandomiseWindowColor();
 
             if (baseParams.windowStyle == OpeningStyle.ARCH)
@@ -98,6 +100,98 @@ public class OpeningsGenerator : MonoBehaviour
             windowParam.finalPos = positions[i];
             windowParam.finalRot = rotations[i];
             windowParam.openingStyle = baseParams.windowStyle;
+            windowParams.Add(windowParam);
+        }
+    }
+
+    public void GenerateAtticOpenings(BaseParams lastBaseParams, AtticParams atticParams, ref List<WindowParams> windowParams, Vector3 lastFloorWinSize, bool rowSameLit)
+    {
+        if (atticParams.finalSize.y < lastBaseParams.finalSize.y)
+        {
+            return;
+        }
+        float maxGap =
+            Random.Range(minDistanceBetweenWindows,
+                maxDistanceBetweenWindows);
+
+        List<Quaternion> rotations = new List<Quaternion>();
+        List<Vector3> positions = new List<Vector3>();
+        Vector3 winSize = lastFloorWinSize;
+        float y = GetGapBetweemTopAndBottom(lastBaseParams.finalSize, winSize);
+        float minX = lastBaseParams.finalSize.y /
+                     (
+                         Mathf.Tan
+                         (
+                             Mathf.Atan
+                            (
+                                 atticParams.finalSize.y / (atticParams.finalSize.x / 2)
+                            )
+                         )
+                     );
+
+
+        float spaceForWindows = atticParams.finalSize.x - minX * 2;
+
+        float spaceForOneWin = winSize.x + maxGap * 2;
+
+        int winCount = (int)(spaceForWindows / spaceForOneWin);
+        Debug.Log(spaceForWindows);
+
+        float SpaceForOneWindow = spaceForWindows/ winCount; //atemus tarpa nuo kampo kiek lieka vienam langui
+        float step = (SpaceForOneWindow - winSize.x) / 2;
+
+        Vector3 addBefore = new Vector3(step, 0, 0);
+        Vector3 addAfter = new Vector3(winSize.x+step, 0, 0);
+        Debug.Log(minX + step);
+        DistributePostionsAndRotationsEvenly(
+            new Vector3(minX+winSize.x, y, windowOffset),
+            Quaternion.Euler(new Vector3(0, 180, 0)),
+            addBefore,
+            addAfter,
+            winCount,
+            ref positions,
+            ref rotations
+        );
+        if (lastBaseParams.backFirewall == false)
+        {
+            DistributePostionsAndRotationsEvenly(
+                new Vector3(minX, y, atticParams.finalSize.z - windowOffset),
+                Quaternion.Euler(Vector3.zero),
+                addBefore,
+                addAfter,
+                winCount,
+                ref positions,
+                ref rotations
+            );
+        }
+        Vector2Int glassColor = RandomiseWindowColor();
+        GenerateArcParameters(winSize);
+        GenerateSegmentsPositions(winSize);
+
+        for (int i = 0; i < positions.Count; i++)
+        {
+            WindowParams windowParam = new WindowParams();
+
+            if (!rowSameLit)
+                glassColor = RandomiseWindowColor();
+
+            if (lastBaseParams.windowStyle == OpeningStyle.ARCH)
+            {
+                windowParam.archedOpeningParams = new ArchedOpeningParams(outerArcF, outerArcB, innerArcF, innerArcB, frameDimensions);
+                windowParam.glassParams = new PlaneParams(lastBaseParams.windowStyle, glassColor, BaseObjSizes.planeArcSize, innerArcF, winSize, windowOffset);
+            }
+            else
+            {
+                windowParam.squareOpeningParams = new SquareOpeningParams(frameDimensions);
+                windowParam.glassParams = new PlaneParams(lastBaseParams.windowStyle, glassColor, BaseObjSizes.planeSqSize, winSize, windowOffset);
+
+            }
+
+            windowParam.segmentationParams = new SegmentationParams(vertSegPositions, horSegPositions, segmentDimensions);
+            windowParam.finalSize = winSize;
+            windowParam.finalPos = positions[i];
+            windowParam.finalRot = rotations[i];
+            windowParam.openingStyle = lastBaseParams.windowStyle;
             windowParams.Add(windowParam);
         }
     }
@@ -127,6 +221,11 @@ public class OpeningsGenerator : MonoBehaviour
             );
     }
 
+    float GetGapBetweemTopAndBottom(Vector3 baseSize,
+        Vector3 winSize)
+    {
+        return (baseSize.y - winSize.y) / 2;
+    }
     void GenerateWindowsPositions(
         Vector3 baseSize,
         Vector3 winSize,
@@ -143,7 +242,7 @@ public class OpeningsGenerator : MonoBehaviour
         int xCount = (int)(baseSize.x / (winSize.x + maxGap)); // langu skaicius x asyje
         int zCount = (int)(baseSize.z / (winSize.x + maxGap)); // langu skaicius z asyje
 
-        float y = (baseSize.y - winSize.y) / 2; //atitraukimas nuo virsaus/apacios
+        float y = GetGapBetweemTopAndBottom(baseSize,winSize); //atitraukimas nuo virsaus/apacios
 
 
         //x asies langai

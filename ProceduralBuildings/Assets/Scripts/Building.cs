@@ -10,7 +10,7 @@ public enum OpeningStyle
 }
 public class Building
 {
-    public Base[] floors;
+    public Base[] bases;
     public BaseParams[] baseParams;
 
     public Roof roof;
@@ -25,21 +25,22 @@ public class Building
     private Chimney chimney;
     private ChimneyParams chimneyParams;
 
+
     private Door door;
 
     private int floorCount;
-    public Building(int minStoriesCount, int maxStoriesCount, GeneratorController generatorController, VertexVisualiser vertexVisualiser)
+    public Building(int minStoriesCount, int maxStoriesCount, bool leftFirewall, bool rightFirewall, bool backFirewall,Material material, Transform parent,bool rowSameLit, VertexVisualiser vertexVisualiser)
     {
         floorCount = RandomizeFloorCount(minStoriesCount, maxStoriesCount);
-        floors = new Base[floorCount];
+        bases = new Base[floorCount];
         baseParams = new BaseParams[floorCount];
 
         OpeningsGenerator openingsGenerator = new OpeningsGenerator();
 
         foundationParams = new FoundationParams();
         foundation = new Foundation(
-            generatorController.mainMaterial,
-            generatorController.parentObj.transform,
+            material,
+            parent,
             foundationParams
         );
 
@@ -49,60 +50,80 @@ public class Building
             {
                 baseParams[i] = new BaseParams(
                     foundationParams.finalSize,
-                    generatorController.leftFirewall,
-                    generatorController.rightFirewall,
-                    generatorController.backFirewall,
+                    leftFirewall,
+                    rightFirewall,
+                    backFirewall,
                     RandomizeOpeningStyle(),
                     RandomizeOpeningStyle());
 
-                floors[i] = new Base(ref baseParams[i], foundation.obj.transform, generatorController.mainMaterial,null ,vertexVisualiser.VisualiseVertices);
+                bases[i] = new Base(ref baseParams[i], foundation.obj.transform, material,null ,vertexVisualiser.VisualiseVertices);
               
             }
             else
             {
                 baseParams[i] = new BaseParams(
                     baseParams[i - 1].finalSize,
-                    generatorController.leftFirewall,
-                    generatorController.rightFirewall,
-                    generatorController.backFirewall,
-                    RandomizeOpeningStyle());
+                    leftFirewall,
+                    rightFirewall,
+                    backFirewall,
+                    i,
+                    i >= 2? baseParams[i-1].windowStyle : RandomizeOpeningStyle()); //2 auktas nustato visu sekanciu aukstu langu isvaizda, pirmas aukstas turi savo
 
-                floors[i] = new Base(ref baseParams[i], floors[i-1].obj.transform, generatorController.mainMaterial, baseParams[i-1], vertexVisualiser.VisualiseVertices);
+                bases[i] = new Base(ref baseParams[i], bases[i-1].obj.transform, material, baseParams[i-1], vertexVisualiser.VisualiseVertices);
 
             }
 
             List<WindowParams> winParams = new List<WindowParams>();
             DoorParams doorParams = new DoorParams();
-            openingsGenerator.GenerateOpenings(baseParams[i],ref winParams,ref doorParams);
-            floors[i].windows = new List<Window>();
-            for (int j = 0; j < winParams.Count; j++)
+            if (baseParams[i].floorNum < 2)
             {
-                floors[i].windows.Add(new Window(floors[i].obj.transform, generatorController.mainMaterial, winParams[j]));
+                openingsGenerator.GenerateOpenings(baseParams[i], ref winParams, ref doorParams,rowSameLit);
+            }
+            else
+            {
+                openingsGenerator.GenerateOpenings(baseParams[i],ref winParams, ref doorParams,rowSameLit, baseParams[i-1].windowParams[0].finalSize);
+
             }
 
-           if(baseParams[i].groundFloor)
-               door = new Door(floors[i].obj.transform, generatorController.mainMaterial,doorParams);
+            baseParams[i].windowParams = winParams;
+            bases[i].windows = new List<Window>();
+
+           for (int j = 0; j < winParams.Count; j++)
+            {
+                bases[i].windows.Add(new Window(bases[i].obj.transform, material, winParams[j]));
+            }
+
+           if(baseParams[i].floorNum == 0)
+               door = new Door(bases[i].obj.transform, material, doorParams);
 
         }
      
 
         atticParams = new AtticParams(baseParams[floorCount-1].finalSize);
         attic = new Attic(
-            generatorController.mainMaterial,
+            material,
             atticParams,
-            floors[floorCount - 1].obj.transform,
+            bases[floorCount - 1].obj.transform,
             vertexVisualiser.VisualiseVertices);
+        List<WindowParams> atticWinParams = new List<WindowParams>();
 
+        openingsGenerator.GenerateAtticOpenings(baseParams[baseParams.Length-1],atticParams, ref atticWinParams, baseParams[baseParams.Length - 1].windowParams[0].finalSize, rowSameLit);
+
+        for (int j = 0; j < atticWinParams.Count; j++)
+        {
+           new Window(attic.obj.transform, material, atticWinParams[j]);
+        }
+        //-------------------------------
         roofParams = new RoofParams(atticParams.finalSize, baseParams[floorCount - 1].finalSize);
        roof = new Roof(
-            generatorController.mainMaterial,
+           material,
             baseParams[floorCount-1],
             roofParams,
-            floors[floorCount - 1].obj.transform,
+            bases[floorCount - 1].obj.transform,
             vertexVisualiser.VisualiseVertices);
 
         chimneyParams = new ChimneyParams(roofParams, baseParams[floorCount - 1]);
-        chimney = new Chimney(chimneyParams, generatorController.mainMaterial, roof.obj.transform);
+        chimney = new Chimney(chimneyParams, material, roof.obj.transform);
     }
 
     int RandomizeFloorCount(int from, int to)

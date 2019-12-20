@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BaseParams : SegmentParams
 {
     public float addedDecorWidth;
-    public bool groundFloor;
     public OpeningStyle windowStyle;
     public OpeningStyle doorStyle;
     public bool leftFirewall;
@@ -21,12 +21,13 @@ public class BaseParams : SegmentParams
     public Vector2Int wallsColor;
     public Vector2Int pillarsColor;
 
+    public int floorNum;
 
+    public List<WindowParams> windowParams;
     public BaseParams(Vector3 foundationFinalSize, bool leftFirewall, bool rightFirewall, bool backFirewall, OpeningStyle windowStyle, OpeningStyle doorStyle)
     {
-        groundFloor = true;
         baseObjSize = BaseObjSizes.baseSize;
-
+        floorNum = 0;
         this.windowStyle = windowStyle;
         this.doorStyle = doorStyle;
         this.leftFirewall = leftFirewall;
@@ -38,11 +39,10 @@ public class BaseParams : SegmentParams
         finalSize = GetGroundFloorFinalSize(foundationFinalSize, minBaseSize, addToFoundationSize);
         finalPos = GetGroundFloorFinalPosition(foundationFinalSize);
     }
-    public BaseParams(Vector3 lastFloorFinalSize,bool leftFirewall, bool rightFirewall, bool backFirewall, OpeningStyle windowStyle)
+    public BaseParams(Vector3 lastFloorFinalSize,bool leftFirewall, bool rightFirewall, bool backFirewall,int floorNum, OpeningStyle windowStyle)
     {
-        this.groundFloor = false;
         baseObjSize = BaseObjSizes.baseSize;
-
+        this.floorNum = floorNum;
         this.windowStyle = windowStyle;
         this.leftFirewall = leftFirewall;
         this.rightFirewall = rightFirewall;

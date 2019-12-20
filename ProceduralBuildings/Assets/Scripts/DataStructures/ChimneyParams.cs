@@ -5,7 +5,7 @@ using UnityEngine;
 public class ChimneyParams : SegmentParams
 {
     private readonly Vector3 minChimneySize = new Vector3(0.4f,1,0.4f);
-    private readonly Vector3 maxChimneySize = new Vector3(0.5f,1.2f,0.5f);
+    private readonly Vector3 maxChimneySize = new Vector3(0.5f,2f,0.5f);
 
     public readonly float capExtrusionSizeXZ = 0.05f;
     public ChimneyParams(RoofParams roofParams, BaseParams lastBaseParams)
