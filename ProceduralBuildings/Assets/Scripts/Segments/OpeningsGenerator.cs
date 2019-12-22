@@ -60,12 +60,12 @@ public class OpeningsGenerator : MonoBehaviour
             if (baseParams.doorStyle == OpeningStyle.ARCH)
             {
                 doorParams.archedOpeningParams = new ArchedOpeningParams(outerArcF, outerArcB, innerArcF, innerArcB, frameDimensions);
-                doorParams.planeParams = new PlaneParams(baseParams.doorStyle, TextureColorIDs.darkBrown, BaseObjSizes.planeArcSize, innerArcF, doorFinalSize, windowOffset);
+                doorParams.planeParams = new PlaneParams(baseParams.doorStyle, ColorManager.GetDoorColor(), BaseObjSizes.planeArcSize, innerArcF, doorFinalSize, windowOffset);
             }
             else
             {
                 doorParams.squareOpeningParams = new SquareOpeningParams(frameDimensions);
-                doorParams.planeParams = new PlaneParams(baseParams.doorStyle, TextureColorIDs.darkBrown, BaseObjSizes.planeSqSize, doorFinalSize, windowOffset);
+                doorParams.planeParams = new PlaneParams(baseParams.doorStyle, ColorManager.GetDoorColor(), BaseObjSizes.planeSqSize, doorFinalSize, windowOffset);
 
             }
 
@@ -118,16 +118,7 @@ public class OpeningsGenerator : MonoBehaviour
         List<Vector3> positions = new List<Vector3>();
         Vector3 winSize = lastFloorWinSize;
         float y = GetGapBetweemTopAndBottom(lastBaseParams.finalSize, winSize);
-        float minX = lastBaseParams.finalSize.y /
-                     (
-                         Mathf.Tan
-                         (
-                             Mathf.Atan
-                            (
-                                 atticParams.finalSize.y / (atticParams.finalSize.x / 2)
-                            )
-                         )
-                     );
+        float minX = lastBaseParams.finalSize.y / (Mathf.Tan(Mathf.Atan(atticParams.finalSize.y / (atticParams.finalSize.x / 2))));
 
 
         float spaceForWindows = atticParams.finalSize.x - minX * 2;
@@ -203,11 +194,11 @@ public class OpeningsGenerator : MonoBehaviour
         switch (r)
         {
             case 0:
-                return TextureColorIDs.lightBlueWindow;
+                return ColorManager.GetBlueWindowColor();
             case 1:
-                return TextureColorIDs.yellowWindow;
+                return ColorManager.GetYellowWindowColor();
             default:
-                return TextureColorIDs.lightBlueWindow;
+                return ColorManager.GetBlueWindowColor();
 
         }
     }

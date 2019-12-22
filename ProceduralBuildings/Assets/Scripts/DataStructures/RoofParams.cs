@@ -6,7 +6,7 @@ public class RoofParams : SegmentParams
 {
     public float roofThiccness;
     const float zToAdd = 0.3f;
-    public Vector2Int color = TextureColorIDs.red;
+    public Vector2Int color = ColorManager.GetRoofColor();
     public RoofParams(Vector3 atticSize,Vector3 lastBaseSize)
     {
         baseObjSize = BaseObjSizes.roofSize;

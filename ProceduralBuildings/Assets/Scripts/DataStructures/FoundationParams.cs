@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FoundationParams : SegmentParams
 {
-    public Vector2Int color = TextureColorIDs.grey;
+    public Vector2Int color = ColorManager.GetFoundationColor();
     public readonly Vector3 minFoundationSize = new Vector3(3, 0.2f, 3.5f);
     public readonly Vector3 maxFoundationSize = new Vector3(3.5f, 0.25f, 4f);
 

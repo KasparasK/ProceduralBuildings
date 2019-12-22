@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AtticParams : SegmentParams
 {
-    public Vector2Int color = TextureColorIDs.orange;
+    public Vector2Int color = ColorManager.GetBaseColor();
     public AtticParams(Vector3 lastFloorSize)
     {
         baseObjSize = BaseObjSizes.atticSize;

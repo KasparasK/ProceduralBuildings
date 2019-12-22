@@ -35,6 +35,8 @@ public class Building
         bases = new Base[floorCount];
         baseParams = new BaseParams[floorCount];
 
+        ColorManager.SetColorPalleteID(RandomiseColorPallete());
+
         OpeningsGenerator openingsGenerator = new OpeningsGenerator();
 
         foundationParams = new FoundationParams();
@@ -135,5 +137,12 @@ public class Building
     {
         OpeningStyle openingStyle = (OpeningStyle)Random.Range(0, 2);
         return openingStyle;
+    }
+
+    int RandomiseColorPallete()
+    {
+        const int from = 1;
+        const int to = 4;
+        return Random.Range(from, to);
     }
 }

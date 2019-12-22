@@ -20,6 +20,7 @@ public class Chimney : Segment
 
         AlterCubeSize(new Vector3(chimneyParams.finalSize.x, (chimneyParams.finalSize.y-(chimneyParams.finalSize.y/4)) * baseObjSize.y, chimneyParams.finalSize.z), baseObjSize, ref vertices);
         AlterMesh(chimneyParams, baseObjSize, ref vertices);
+        mesh.uv = GenerateUVs(vertices.Length, chimneyParams.color);
         mesh.vertices = vertices;
     }
 

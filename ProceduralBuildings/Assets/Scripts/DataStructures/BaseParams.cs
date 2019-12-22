@@ -56,8 +56,8 @@ public class BaseParams : SegmentParams
 
     void SetColors()
     {
-        wallsColor = TextureColorIDs.orange;
-        pillarsColor = TextureColorIDs.black;
+        wallsColor = ColorManager.GetBaseColor();
+        pillarsColor = ColorManager.GetPillarsColor();
 
     }
     Vector3 GetGroundFloorFinalPosition(Vector3 lastFloorFinalSize)

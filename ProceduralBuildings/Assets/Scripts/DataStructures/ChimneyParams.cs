@@ -8,6 +8,8 @@ public class ChimneyParams : SegmentParams
     private readonly Vector3 maxChimneySize = new Vector3(0.5f,2f,0.5f);
 
     public readonly float capExtrusionSizeXZ = 0.05f;
+
+    public Vector2Int color = ColorManager.GetChimneyColor();
     public ChimneyParams(RoofParams roofParams, BaseParams lastBaseParams)
     {
         finalSize = GetFinalSize();
