@@ -29,9 +29,9 @@ public class Building
     private Door door;
 
     private int floorCount;
-    public Building(int minStoriesCount, int maxStoriesCount, bool leftFirewall, bool rightFirewall, bool backFirewall,Material material, Transform parent,bool rowSameLit, VertexVisualiser vertexVisualiser)
+    public Building(BuildingParams buildingParams, Material material, Transform parent, VertexVisualiser vertexVisualiser)
     {
-        floorCount = RandomizeFloorCount(minStoriesCount, maxStoriesCount);
+        floorCount = RandomizeFloorCount(buildingParams.minStoriesCount, buildingParams.maxStoriesCount);
         bases = new Base[floorCount];
         baseParams = new BaseParams[floorCount];
 
@@ -39,7 +39,7 @@ public class Building
 
         OpeningsGenerator openingsGenerator = new OpeningsGenerator();
 
-        foundationParams = new FoundationParams();
+        foundationParams = new FoundationParams(buildingParams);
         foundation = new Foundation(
             material,
             parent,
@@ -52,9 +52,7 @@ public class Building
             {
                 baseParams[i] = new BaseParams(
                     foundationParams.finalSize,
-                    leftFirewall,
-                    rightFirewall,
-                    backFirewall,
+                    buildingParams,
                     RandomizeOpeningStyle(),
                     RandomizeOpeningStyle());
 
@@ -65,9 +63,7 @@ public class Building
             {
                 baseParams[i] = new BaseParams(
                     baseParams[i - 1].finalSize,
-                    leftFirewall,
-                    rightFirewall,
-                    backFirewall,
+                    buildingParams,
                     i,
                     i >= 2? baseParams[i-1].windowStyle : RandomizeOpeningStyle()); //2 auktas nustato visu sekanciu aukstu langu isvaizda, pirmas aukstas turi savo
 
@@ -79,11 +75,11 @@ public class Building
             DoorParams doorParams = new DoorParams();
             if (baseParams[i].floorNum < 2)
             {
-                openingsGenerator.GenerateOpenings(baseParams[i], ref winParams, ref doorParams,rowSameLit);
+                openingsGenerator.GenerateOpenings(baseParams[i], ref winParams, ref doorParams, buildingParams.rowSameLit);
             }
             else
             {
-                openingsGenerator.GenerateOpenings(baseParams[i],ref winParams, ref doorParams,rowSameLit, baseParams[i-1].windowParams[0].finalSize);
+                openingsGenerator.GenerateOpenings(baseParams[i],ref winParams, ref doorParams, buildingParams.rowSameLit, baseParams[i-1].windowParams[0].finalSize);
 
             }
 
@@ -109,7 +105,7 @@ public class Building
             vertexVisualiser.VisualiseVertices);
         List<WindowParams> atticWinParams = new List<WindowParams>();
 
-        openingsGenerator.GenerateAtticOpenings(baseParams[baseParams.Length-1],atticParams, ref atticWinParams, baseParams[baseParams.Length - 1].windowParams[0].finalSize, rowSameLit);
+        openingsGenerator.GenerateAtticOpenings(baseParams[baseParams.Length-1],atticParams, ref atticWinParams, baseParams[baseParams.Length - 1].windowParams[0].finalSize, buildingParams.rowSameLit);
 
         for (int j = 0; j < atticWinParams.Count; j++)
         {

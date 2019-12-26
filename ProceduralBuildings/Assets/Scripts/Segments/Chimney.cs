@@ -75,8 +75,6 @@ public class Chimney : Segment
 
         AlterVertexPosition(ref vertices[tempID], posToAdd);
         //--------------------------------
-        /*  tempID++;
-          AlterVertexPosition(ref vertices[tempID], posToAdd);*/
 
     }
 }

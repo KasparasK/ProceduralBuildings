@@ -24,31 +24,36 @@ public class BaseParams : SegmentParams
     public int floorNum;
 
     public List<WindowParams> windowParams;
-    public BaseParams(Vector3 foundationFinalSize, bool leftFirewall, bool rightFirewall, bool backFirewall, OpeningStyle windowStyle, OpeningStyle doorStyle)
+    public BaseParams(Vector3 foundationFinalSize,BuildingParams buildingParams, OpeningStyle windowStyle, OpeningStyle doorStyle)
     {
         baseObjSize = BaseObjSizes.baseSize;
         floorNum = 0;
         this.windowStyle = windowStyle;
         this.doorStyle = doorStyle;
-        this.leftFirewall = leftFirewall;
-        this.rightFirewall = rightFirewall;
-        this.backFirewall = backFirewall;
+        
+        this.leftFirewall = buildingParams.leftFirewall;
+        this.rightFirewall = buildingParams.rightFirewall;
+        this.backFirewall = buildingParams.backFirewall;
 
         SetColors();
 
         finalSize = GetGroundFloorFinalSize(foundationFinalSize, minBaseSize, addToFoundationSize);
         finalPos = GetGroundFloorFinalPosition(foundationFinalSize);
     }
-    public BaseParams(Vector3 lastFloorFinalSize,bool leftFirewall, bool rightFirewall, bool backFirewall,int floorNum, OpeningStyle windowStyle)
+    public BaseParams(Vector3 lastFloorFinalSize, BuildingParams buildingParams, int floorNum, OpeningStyle windowStyle)
     {
         baseObjSize = BaseObjSizes.baseSize;
         this.floorNum = floorNum;
         this.windowStyle = windowStyle;
-        this.leftFirewall = leftFirewall;
-        this.rightFirewall = rightFirewall;
-        this.backFirewall = backFirewall;
+
+        this.leftFirewall = buildingParams.leftFirewall;
+        this.rightFirewall = buildingParams.rightFirewall;
+        this.backFirewall = buildingParams.backFirewall;
 
         SetColors();
+
+        if(buildingParams.sameSizeFloors)
+            addToLastSize = Vector3.zero;
 
         finalSize = GetFinalSize(lastFloorFinalSize, addToLastSize);
         finalPos = GetFinalPosition(lastFloorFinalSize);

@@ -114,6 +114,7 @@ public class OpeningsGenerator : MonoBehaviour
             Random.Range(minDistanceBetweenWindows,
                 maxDistanceBetweenWindows);
 
+        maxGap /= 2;
         List<Quaternion> rotations = new List<Quaternion>();
         List<Vector3> positions = new List<Vector3>();
         Vector3 winSize = lastFloorWinSize;

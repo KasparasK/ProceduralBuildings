@@ -8,9 +8,13 @@ public class FoundationParams : SegmentParams
     public readonly Vector3 minFoundationSize = new Vector3(3, 0.2f, 3.5f);
     public readonly Vector3 maxFoundationSize = new Vector3(3.5f, 0.25f, 4f);
 
-    public FoundationParams()
+    public FoundationParams(BuildingParams buildingParams)
     {
-        finalSize = GetSize();
+        if (buildingParams.useCustomBuildingSize)
+            finalSize = new Vector3(buildingParams.customBuildingSizeX, minFoundationSize.y, buildingParams.customBuildingSizeZ);
+        else
+            finalSize = GetSize();
+
         finalPos = GetPosition();
         baseObjSize = BaseObjSizes.baseSize;
     }

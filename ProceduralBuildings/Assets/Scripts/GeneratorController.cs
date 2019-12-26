@@ -13,13 +13,20 @@ public class GeneratorController : MonoBehaviour
     public bool leftFirewall, rightFirewall, backFirewall;
     public bool rowSameLit;
 
+    public bool sameSizeFloors;
     public GameObject parentObj;
 
     public VertexVisualiser VertexVisualiser;
 
-    
+    public bool useCustomBuildingSize;
+        [Range(2,10)]
+    public float customBuildingSizeX;
+    [Range(2, 10)]
+
+    public float customBuildingSizeZ;
 
     public int minStoriesCount, maxStoriesCount;
+
     private double startTime;
     private double endTime;
     public void Generate()
@@ -34,7 +41,19 @@ public class GeneratorController : MonoBehaviour
         parentObj.transform.position= Vector3.zero;
         parentObj.name = "Building";
 
-        Building building = new Building(minStoriesCount, maxStoriesCount, leftFirewall,rightFirewall,backFirewall, material, parentObj.transform,rowSameLit, VertexVisualiser);
+        BuildingParams buildingParams = new BuildingParams(
+            leftFirewall,
+            rightFirewall, 
+            backFirewall,
+            useCustomBuildingSize,
+            customBuildingSizeX,
+            customBuildingSizeZ,
+            rowSameLit,
+            sameSizeFloors,
+            minStoriesCount,
+            maxStoriesCount);
+
+        Building building = new Building(buildingParams, material, parentObj.transform, VertexVisualiser);
         endTime = EditorApplication.timeSinceStartup;
         Debug.Log("Generation finished. Duration: " + (endTime - startTime) * 1000 + " ms");
 
@@ -45,6 +64,19 @@ public class GeneratorController : MonoBehaviour
     {
         double totalTime = 0;
         int retryCount = 200;
+
+        BuildingParams buildingParams = new BuildingParams(
+            leftFirewall,
+            rightFirewall,
+            backFirewall,
+            useCustomBuildingSize,
+            customBuildingSizeX,
+            customBuildingSizeZ,
+            rowSameLit,
+            sameSizeFloors,
+            minStoriesCount,
+            maxStoriesCount);
+
         for (int i = 0; i < retryCount; i++)
         {
             startTime = EditorApplication.timeSinceStartup;
@@ -56,7 +88,7 @@ public class GeneratorController : MonoBehaviour
             parentObj.transform.position = Vector3.zero;
             parentObj.name = "Building";
 
-            Building building = new Building(minStoriesCount, maxStoriesCount, leftFirewall, rightFirewall, backFirewall, material, parentObj.transform, rowSameLit, VertexVisualiser);
+            Building building = new Building(buildingParams, material, parentObj.transform, VertexVisualiser);
             endTime = EditorApplication.timeSinceStartup;
 
             totalTime += (endTime - startTime);
