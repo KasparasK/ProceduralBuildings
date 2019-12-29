@@ -99,5 +99,10 @@ public class GeneratorController : MonoBehaviour
     }
 
 
-
+    public void Merge()
+    {
+       CombineMeshes combineMeshes = new CombineMeshes();
+       combineMeshes.MergeChildren(parentObj);
+       
+    }
 }

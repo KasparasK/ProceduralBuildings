@@ -1,37 +1,43 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CombineMeshes {
-    
-    public GameObject CombineOBJ(List<GameObject> objs)
+    public void MergeChildren(GameObject gameObject)
     {
-        MeshFilter[] meshFilters = new MeshFilter[objs.Count];
-        for (int j = 0; j < objs.Count; j++)
-        {
-            meshFilters[j] = objs[j].GetComponent<MeshFilter>();
-        }
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        Quaternion oldRot = gameObject.transform.rotation;
+        Vector3 oldPos = gameObject.transform.position;
 
+        GameObject child = gameObject.transform.GetChild(0).gameObject;
+
+        Material mat = child.GetComponent<Renderer>().sharedMaterial;
+
+        MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
         int i = 0;
         while (i < meshFilters.Length)
         {
             combine[i].mesh = meshFilters[i].sharedMesh;
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
             meshFilters[i].gameObject.SetActive(false);
-
             i++;
         }
+        if (!gameObject.GetComponent<MeshFilter>())
+            gameObject.AddComponent<MeshFilter>();
+        if (!gameObject.GetComponent<MeshRenderer>())
+            gameObject.AddComponent<MeshRenderer>();
+        if (!gameObject.GetComponent<MeshCollider>())
+            gameObject.AddComponent<MeshCollider>();
 
-        objs[0].GetComponent<MeshFilter>().mesh = new Mesh();
-        objs[0].GetComponent<MeshFilter>().sharedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        objs[0].GetComponent<MeshFilter>().sharedMesh.CombineMeshes(combine);
-        objs[0].gameObject.SetActive(true);
+        Mesh finalMesh = new Mesh();
+        finalMesh.CombineMeshes(combine);
 
-        for (i = 1; i < objs.Count; i++)
-        {
-            Object.DestroyImmediate(objs[i]);
-        }
+        gameObject.transform.GetComponent<MeshCollider>().sharedMesh = finalMesh;
+        gameObject.transform.GetComponent<MeshFilter>().sharedMesh = finalMesh;
 
-        return objs[0];
+        gameObject.transform.rotation = oldRot;
+        gameObject.transform.position = oldPos;
+        gameObject.GetComponent<Renderer>().sharedMaterial = mat;
+        gameObject.transform.gameObject.SetActive(true);
+
     }
+
 }
