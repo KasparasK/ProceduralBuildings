@@ -104,7 +104,7 @@ public class OpeningsGenerator : MonoBehaviour
         }
     }
 
-    public void GenerateAtticOpenings(BaseParams lastBaseParams, AtticParams atticParams, ref List<WindowParams> windowParams, Vector3 lastFloorWinSize, bool rowSameLit)
+    public void GenerateAtticOpenings(BaseParams lastBaseParams, AtticParams atticParams, ref List<WindowParams> windowParams, bool rowSameLit)
     {
         if (atticParams.finalSize.y < lastBaseParams.finalSize.y)
         {
@@ -117,7 +117,7 @@ public class OpeningsGenerator : MonoBehaviour
         maxGap /= 2;
         List<Quaternion> rotations = new List<Quaternion>();
         List<Vector3> positions = new List<Vector3>();
-        Vector3 winSize = lastFloorWinSize;
+        Vector3 winSize = lastBaseParams.windowParams[0].finalSize;
         float y = GetGapBetweemTopAndBottom(lastBaseParams.finalSize, winSize);
         float minX = lastBaseParams.finalSize.y / (Mathf.Tan(Mathf.Atan(atticParams.finalSize.y / (atticParams.finalSize.x / 2))));
 

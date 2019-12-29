@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class AtticParams : SegmentParams
 {
     public Vector2Int color = ColorManager.GetBaseColor();
+    public List<WindowParams> windowParams;
     public AtticParams(Vector3 lastFloorSize)
     {
         baseObjSize = BaseObjSizes.atticSize;
@@ -34,5 +34,12 @@ public class AtticParams : SegmentParams
 
         return finalSize;
 
+    }
+
+    public void GenerateWindowsParams(BuildingParams buildingParams,BaseParams lastBaseParams )
+    {
+        windowParams = new List<WindowParams>();
+        OpeningsGenerator openingsGenerator = new OpeningsGenerator();
+        openingsGenerator.GenerateAtticOpenings(lastBaseParams,this, ref windowParams, buildingParams.rowSameLit);
     }
 }

@@ -36,7 +36,9 @@ public class CombineMeshes {
         gameObject.transform.rotation = oldRot;
         gameObject.transform.position = oldPos;
         gameObject.GetComponent<Renderer>().sharedMaterial = mat;
-        gameObject.transform.gameObject.SetActive(true);
+        gameObject.SetActive(true);
+
+        Object.DestroyImmediate(gameObject.transform.GetChild(0).gameObject);
 
     }
 

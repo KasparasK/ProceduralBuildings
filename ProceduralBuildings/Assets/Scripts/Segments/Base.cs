@@ -8,7 +8,9 @@ public class Base : Segment
 {
     private const string name = "base";
     public List<Window> windows;
-    public Base(ref BaseParams baseParams,Transform parent, Material material, BaseParams lastBaseParams = null, Action<Vector3[]> verticesDebugger = null)
+    public Door door;
+    public Base(ref BaseParams baseParams, Transform parent, Material material, BaseParams lastBaseParams = null,
+        Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = baseParams.baseObjSize;
@@ -22,7 +24,7 @@ public class Base : Segment
         AlterCubeSize(baseParams.finalSize, baseParams.baseObjSize, ref vertices);
         AddSidePilars(
             ref vertices,
-            baseParams.backFirewall, 
+            baseParams.backFirewall,
             baseParams.leftFirewall,
             baseParams.rightFirewall,
             baseParams.sideDecorWidth,
@@ -35,7 +37,8 @@ public class Base : Segment
 
         if (baseParams.floorNum == 0)
         {
-            int removeFrom = CalculateRingSize(baseObjSize) * (baseObjSize.y + 1) + ((baseObjSize.x + 1) * (baseObjSize.z + 1));
+            int removeFrom = CalculateRingSize(baseObjSize) * (baseObjSize.y + 1) +
+                             ((baseObjSize.x + 1) * (baseObjSize.z + 1));
             int removeTo = removeFrom + ((baseObjSize.x + 1) * (baseObjSize.z + 1)) - 1;
             RemoveVerticesAndTriangles(removeFrom, removeTo);
         }
@@ -43,12 +46,14 @@ public class Base : Segment
         mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         vertices = mesh.vertices;
 
-        obj.GetComponent<MeshFilter>().sharedMesh.uv = GenerateUVs(vertices.Length, baseObjSize,baseParams.wallsColor,baseParams.pillarsColor);
+        obj.GetComponent<MeshFilter>().sharedMesh.uv = GenerateUVs(vertices.Length, baseObjSize, baseParams.wallsColor,
+            baseParams.pillarsColor);
         obj.transform.localPosition = baseParams.finalPos;
     }
 
 
-    protected Vector2[] GenerateUVs(int verticesLength,Vector3Int baseObjSize,Vector2Int _wallsColor, Vector2Int _pillarsColor)
+    protected Vector2[] GenerateUVs(int verticesLength, Vector3Int baseObjSize, Vector2Int _wallsColor,
+        Vector2Int _pillarsColor)
     {
         Vector2 wallsColor = GetColorPosition(_wallsColor);
         Vector2 pillarsColor = GetColorPosition(_pillarsColor);
@@ -59,22 +64,37 @@ public class Base : Segment
         int increment = 2;
         int i = 2;
         int ring = CalculateRingSize(baseObjSize);
-        while (i < ring*(baseObjSize.y+1))
+        while (i < ring * (baseObjSize.y + 1))
         {
             for (int j = 0; j < increment; j++)
             {
-               // Debug.Log(i+j);
-                if(i+j >= verticesLength)
+                // Debug.Log(i+j);
+                if (i + j >= verticesLength)
                     break;
-                
-                uvs[i+j] = pillarColor ? pillarsColor : wallsColor;
+
+                uvs[i + j] = pillarColor ? pillarsColor : wallsColor;
             }
 
             i += increment;
-            increment = !pillarColor? 4 : 2;
+            increment = !pillarColor ? 4 : 2;
             pillarColor = !pillarColor;
         }
 
         return uvs;
+    }
+
+    public void GenerateWindows(BaseParams baseParams, Material material)
+    {
+        windows = new List<Window>();
+
+        for (int j = 0; j < baseParams.windowParams.Count; j++)
+        {
+            windows.Add(new Window(obj.transform, material, baseParams.windowParams[j]));
+        }
+    }
+
+    public void GenerateDoor(DoorParams doorParams, Material material)
+    {
+        door = new Door(obj.transform, material, doorParams);
     }
 }

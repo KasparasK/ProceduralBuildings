@@ -24,6 +24,7 @@ public class BaseParams : SegmentParams
     public int floorNum;
 
     public List<WindowParams> windowParams;
+    public DoorParams doorParams;
     public BaseParams(Vector3 foundationFinalSize,BuildingParams buildingParams, OpeningStyle windowStyle, OpeningStyle doorStyle)
     {
         baseObjSize = BaseObjSizes.baseSize;
@@ -135,4 +136,19 @@ public class BaseParams : SegmentParams
 
     }
 
+    public void GenerateWindowsParams(BuildingParams buildingParams, Vector3? lastFloorWinSize = null)
+    {
+        windowParams = new List<WindowParams>();
+        OpeningsGenerator openingsGenerator = new OpeningsGenerator();
+        openingsGenerator.GenerateOpenings(this, ref windowParams, ref doorParams, buildingParams.rowSameLit, lastFloorWinSize);
+    }
+
+    public void GenerateWindowsAndDoorParams(BuildingParams buildingParams, Vector3? lastFloorWinSize = null)
+    {
+        windowParams = new List<WindowParams>();
+        doorParams = new DoorParams();
+
+        OpeningsGenerator openingsGenerator = new OpeningsGenerator();
+        openingsGenerator.GenerateOpenings(this, ref windowParams, ref doorParams, buildingParams.rowSameLit, lastFloorWinSize);
+    }
 }

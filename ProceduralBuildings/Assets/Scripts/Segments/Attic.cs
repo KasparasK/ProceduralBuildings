@@ -6,6 +6,7 @@ using UnityEngine;
 public class Attic : Segment
 {
     private const string name = "attic";
+    public List<Window> windows;
 
     public Attic(Material material, AtticParams atticParams,Transform parent, Action<Vector3[]> verticesDebugger = null)
     {
@@ -38,7 +39,6 @@ public class Attic : Segment
         //  VisualiseVertices(mesh.vertices);
         obj.transform.localPosition = atticParams.finalPos;
     }
-
 
     void FormAttic(Vector3 goalSize,Vector3Int baseObjSize, ref Vector3[] vertices)
     {
@@ -83,5 +83,15 @@ public class Attic : Segment
         
     }
 
-  
+    public void GenerateWindows(AtticParams atticParams, Material material)
+    {
+        windows = new List<Window>();
+
+        for (int j = 0; j < atticParams.windowParams.Count; j++)
+        {
+            windows.Add(new Window(obj.transform, material, atticParams.windowParams[j]));
+        }
+    }
+
+
 }
