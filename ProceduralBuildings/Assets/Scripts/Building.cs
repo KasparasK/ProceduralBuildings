@@ -76,13 +76,13 @@ public class Building
         {
             if (i == 0)
             {
-                baseParams[i] = new BaseParams(foundationParams.finalSize, buildingParams, RandomizeOpeningStyle(), RandomizeOpeningStyle());
+                baseParams[i] = new BaseParams(foundationParams.finalSize, buildingParams, GetOpeningStyle(buildingParams), GetOpeningStyle(buildingParams));
                 baseParams[i].GenerateWindowsAndDoorParams(buildingParams);
             }
             else
             {
                 //2 auktas nustato visu sekanciu aukstu langu isvaizda, pirmas aukstas turi savo
-                baseParams[i] = new BaseParams(baseParams[i - 1].finalSize, buildingParams, i, i >= 2 ? baseParams[i - 1].windowStyle : RandomizeOpeningStyle());
+                baseParams[i] = new BaseParams(baseParams[i - 1].finalSize, buildingParams, i, i >= 2 ? baseParams[i - 1].windowStyle : GetOpeningStyle(buildingParams));
                 if(i == 1)
                     baseParams[i].GenerateWindowsParams(buildingParams);
                 else
@@ -103,8 +103,13 @@ public class Building
           return Random.Range(from, to + 1);
     }
 
-    OpeningStyle RandomizeOpeningStyle()
+    OpeningStyle GetOpeningStyle(BuildingParams buildingParams)
     {
+        if (buildingParams.onlySquareOpenings)
+            return OpeningStyle.SQUARE;
+        else if (buildingParams.onlyArchedOpenings)
+            return OpeningStyle.ARCH;
+
         OpeningStyle openingStyle = (OpeningStyle)Random.Range(0, 2);
         return openingStyle;
     }

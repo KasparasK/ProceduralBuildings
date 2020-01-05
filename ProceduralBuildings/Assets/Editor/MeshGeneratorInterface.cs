@@ -12,6 +12,7 @@ public class MeshGeneratorInterface : Editor
     private GUIStyle controlPanel;
     float minStoriesCount = 1;
     float maxStoriesCount = 1;
+    int selected = 0;
 
     void OnEnable()
     {
@@ -49,8 +50,10 @@ public class MeshGeneratorInterface : Editor
 
         FloorCountSettings(maxWidth);
         HorizontalLine(Color.black);
+
         CustomSizeSettings();
         HorizontalLine(Color.black);
+
         ControlButtons();
         HorizontalLine(Color.black);
 
@@ -83,6 +86,33 @@ public class MeshGeneratorInterface : Editor
         GUILayout.Space(5);
 
         generatorController.sameSizeFloors = GUILayout.Toggle(generatorController.sameSizeFloors, "Every floor the same size");
+        GUILayout.Space(5);
+
+        string[] options = new string[]
+        {
+            "Random style of door and windows", "Only arched door and windows","Only square door and windows",
+        };
+        selected = EditorGUILayout.Popup("Windows and doors style", selected, options);
+
+        switch (selected)
+        {
+            case 0:
+                generatorController.onlyArchedOpenings = false;
+                generatorController.onlySquareOpenings = false;
+                break;
+            case 1:
+                generatorController.onlyArchedOpenings = true;
+                generatorController.onlySquareOpenings = false;
+                break;
+            case 2:
+                generatorController.onlyArchedOpenings = false;
+                generatorController.onlySquareOpenings = true;
+                break;
+            default:
+                generatorController.onlyArchedOpenings = false;
+                generatorController.onlySquareOpenings = false;
+                break;
+        }
     }
     void FloorCountSettings(float maxWidth)
     {

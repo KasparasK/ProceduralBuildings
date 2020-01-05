@@ -20,6 +20,9 @@ public class GeneratorController : MonoBehaviour
 
     [HideInInspector]
     public bool leftFirewall, rightFirewall, backFirewall;
+
+    [HideInInspector]
+    public bool onlySquareOpenings, onlyArchedOpenings;
     [HideInInspector]
     public bool rowSameLit;
     [HideInInspector]
@@ -75,7 +78,9 @@ public class GeneratorController : MonoBehaviour
             sameSizeFloors,
             minStoriesCount,
             maxStoriesCount,
-            generateCornerPillars);
+            generateCornerPillars, 
+            onlySquareOpenings,
+            onlyArchedOpenings);
 
         Building building = new Building(buildingParams, material, parentObj.transform);
         endTime = EditorApplication.timeSinceStartup;
@@ -100,7 +105,9 @@ public class GeneratorController : MonoBehaviour
             sameSizeFloors,
             minStoriesCount,
             maxStoriesCount,
-            generateCornerPillars);
+            generateCornerPillars,
+            onlySquareOpenings,
+            onlyArchedOpenings);
 
         for (int i = 0; i < retryCount; i++)
         {
