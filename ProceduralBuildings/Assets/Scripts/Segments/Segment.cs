@@ -6,8 +6,6 @@ using UnityEngine;
 public abstract class Segment
 {
     public GameObject obj;
-    
-    public Action<Vector3[]> verticesDebugger;
 
     private MeshGenerator meshGenerator;
 
@@ -448,12 +446,4 @@ public abstract class Segment
     {
         obj = meshGenerator.RemoveVerticesAndTriangles(obj, removeFrom, removeTo);
     }
-    protected void VisualiseVertices(Vector3[] vertices)
-    {
-        if (verticesDebugger != null)
-            verticesDebugger(vertices);
-        else
-            Debug.LogWarning("Vertices Debugger not connected");
-    }
-
 }

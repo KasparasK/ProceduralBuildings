@@ -10,9 +10,8 @@ public class Foundation : Segment
     public float addedDecorWidth;
 
 
-    public Foundation(Material material, Transform parent, FoundationParams foundationParams,BuildingParams buildingParams, Action<Vector3[]> verticesDebugger = null)
+    public Foundation(Material material, Transform parent, FoundationParams foundationParams,BuildingParams buildingParams)
     {
-        base.verticesDebugger = verticesDebugger;
 
         Vector3Int baseObjSize = foundationParams.baseObjSize;
 

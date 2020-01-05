@@ -6,9 +6,8 @@ using UnityEngine;
 public class SquareOpening : Segment
 {
     private const string name = "squareOpening";
-    public SquareOpening(Vector3 goalSize, Material material,SquareOpeningParams squareOpeningParams , Action<Vector3[]> verticesDebugger = null)
+    public SquareOpening(Vector3 goalSize, Material material,SquareOpeningParams squareOpeningParams)
     {
-        base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = BaseObjSizes.openingSqSize;
         GenerateBaseCube(material, baseObjSize, name);
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;

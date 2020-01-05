@@ -4,9 +4,8 @@ using UnityEngine;
 public class Roof : Segment
 {
     private const string name = "roof";
-    public Roof(Material material, BaseParams lastBaseParams,RoofParams roofParams,Transform parent, Action<Vector3[]> verticesDebugger = null)
+    public Roof(Material material, BaseParams lastBaseParams,RoofParams roofParams,Transform parent)
    {
-       base.verticesDebugger = verticesDebugger;
        Vector3Int baseObjSize = roofParams.baseObjSize;
 
        GenerateBaseCube(material, baseObjSize,name);

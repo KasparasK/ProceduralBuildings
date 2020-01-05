@@ -26,7 +26,7 @@ public class Building
     private Door door;
 
     private int floorCount;
-    public Building(BuildingParams buildingParams, Material material, Transform parent, VertexVisualiser vertexVisualiser)
+    public Building(BuildingParams buildingParams, Material material, Transform parent)
     {
         floorCount = RandomizeFloorCount(buildingParams.minStoriesCount, buildingParams.maxStoriesCount);
         bases = new Base[floorCount];
@@ -36,10 +36,10 @@ public class Building
 
         GenerateSegmentParams(buildingParams);
 
-        GenerateSegments(buildingParams,material, parent, vertexVisualiser);
+        GenerateSegments(buildingParams,material, parent);
     }
 
-    void GenerateSegments(BuildingParams buildingParams, Material material, Transform parent, VertexVisualiser vertexVisualiser)
+    void GenerateSegments(BuildingParams buildingParams, Material material, Transform parent)
     {
         foundation = new Foundation(material, parent, foundationParams, buildingParams);
 
@@ -47,22 +47,22 @@ public class Building
         {
             if (i == 0)
             {
-                bases[i] = new Base(ref baseParams[i], foundation.obj.transform, material,buildingParams, null, vertexVisualiser.VisualiseVertices);
+                bases[i] = new Base(ref baseParams[i], foundation.obj.transform, material,buildingParams, null);
                 bases[i].GenerateDoor(baseParams[i].doorParams, material);
             }
             else
             {
-                bases[i] = new Base(ref baseParams[i], bases[i - 1].obj.transform, material, buildingParams, baseParams[i - 1], vertexVisualiser.VisualiseVertices);
+                bases[i] = new Base(ref baseParams[i], bases[i - 1].obj.transform, material, buildingParams, baseParams[i - 1]);
             }
 
 
             bases[i].GenerateWindows(baseParams[i], material);
         }
 
-        attic = new Attic(material, atticParams, bases[floorCount - 1].obj.transform, vertexVisualiser.VisualiseVertices);
+        attic = new Attic(material, atticParams, bases[floorCount - 1].obj.transform);
         attic.GenerateWindows(atticParams, material);
 
-        roof = new Roof(material, baseParams[floorCount - 1], roofParams, bases[floorCount - 1].obj.transform, vertexVisualiser.VisualiseVertices);
+        roof = new Roof(material, baseParams[floorCount - 1], roofParams, bases[floorCount - 1].obj.transform);
 
         chimney = new Chimney(chimneyParams, material, roof.obj.transform);
     }

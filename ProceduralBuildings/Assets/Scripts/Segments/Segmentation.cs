@@ -6,9 +6,8 @@ using UnityEngine;
 public class Segmentation : Segment
 {
     private const string name = "segments";
-    public Segmentation(Transform parent,Vector3 winSize, Material material, SegmentationParams segmentationParams, Action<Vector3[]> verticesDebugger = null)
+    public Segmentation(Transform parent,Vector3 winSize, Material material, SegmentationParams segmentationParams)
     {
-        base.verticesDebugger = verticesDebugger;
 
         GenerateSegements(parent, winSize, material, segmentationParams);
     }

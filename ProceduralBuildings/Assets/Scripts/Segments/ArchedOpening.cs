@@ -6,9 +6,8 @@ public class ArchedOpening : Segment
     private const string name = "archedOpening";
 
 
-    public ArchedOpening(Vector3 goalSize, Material material, ArchedOpeningParams archedOpeningParams , Action<Vector3[]> verticesDebugger = null)
+    public ArchedOpening(Vector3 goalSize, Material material, ArchedOpeningParams archedOpeningParams)
     {
-        base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = BaseObjSizes.openingArcSize;
         GenerateBaseCube(material, baseObjSize, name);
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;

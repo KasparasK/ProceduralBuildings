@@ -6,9 +6,8 @@ using UnityEngine;
 public class Plane : Segment
 {
     private const string name = "plane";
-    public Plane(Material material, Transform parent, Vector3 size, PlaneParams planeParams , Action<Vector3[]> verticesDebugger = null)
+    public Plane(Material material, Transform parent, Vector3 size, PlaneParams planeParams)
     {
-        base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = planeParams.baseObjSize;
 
         GenerateBasePlane(material, baseObjSize, name);

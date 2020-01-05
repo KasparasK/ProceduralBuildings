@@ -17,10 +17,6 @@ public class OpeningsGenerator : MonoBehaviour
     private const float maxDistanceBetweenSegments = 0.2f;
     private const float windowOffset = 0.02f; //kiek islindes
 
-    private readonly float minDoorX = 0.5f;
-    private readonly float maxDoorX = 0.9f;
-
-
     private List<Vector3> vertSegPositions;
     private List<Vector3> horSegPositions;
     private float angle;

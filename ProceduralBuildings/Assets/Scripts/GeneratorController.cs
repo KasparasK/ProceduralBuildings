@@ -26,9 +26,9 @@ public class GeneratorController : MonoBehaviour
     public bool generateCornerPillars;
     [HideInInspector]
     public bool sameSizeFloors;
+    [HideInInspector]
     public GameObject parentObj;
 
-    public VertexVisualiser VertexVisualiser;
     [HideInInspector]
     public bool useCustomBuildingSize;
 
@@ -77,7 +77,7 @@ public class GeneratorController : MonoBehaviour
             maxStoriesCount,
             generateCornerPillars);
 
-        Building building = new Building(buildingParams, material, parentObj.transform, VertexVisualiser);
+        Building building = new Building(buildingParams, material, parentObj.transform);
         endTime = EditorApplication.timeSinceStartup;
         Debug.Log("Generation finished. Duration: " + (endTime - startTime) * 1000 + " ms");
 
@@ -113,7 +113,7 @@ public class GeneratorController : MonoBehaviour
             parentObj.transform.position = Vector3.zero;
             parentObj.name = "Building";
 
-            Building building = new Building(buildingParams, material, parentObj.transform, VertexVisualiser);
+            Building building = new Building(buildingParams, material, parentObj.transform);
             endTime = EditorApplication.timeSinceStartup;
 
             totalTime += (endTime - startTime);

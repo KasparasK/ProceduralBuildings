@@ -8,9 +8,8 @@ public class Attic : Segment
     private const string name = "attic";
     public List<Window> windows;
 
-    public Attic(Material material, AtticParams atticParams,Transform parent, Action<Vector3[]> verticesDebugger = null)
+    public Attic(Material material, AtticParams atticParams,Transform parent)
     {
-        base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = BaseObjSizes.atticSize;
 
         GenerateBaseCube(material, baseObjSize,name);

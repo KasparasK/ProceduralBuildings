@@ -7,10 +7,8 @@ public class Base : Segment
     private const string name = "base";
     public List<Window> windows;
     public Door door;
-    public Base(ref BaseParams baseParams, Transform parent, Material material,BuildingParams buildingParams, BaseParams lastBaseParams = null,
-        Action<Vector3[]> verticesDebugger = null)
+    public Base(ref BaseParams baseParams, Transform parent, Material material,BuildingParams buildingParams, BaseParams lastBaseParams = null)
     {
-        base.verticesDebugger = verticesDebugger;
         Vector3Int baseObjSize = baseParams.baseObjSize;
 
         GenerateBaseCube(material, baseParams.baseObjSize, name);
