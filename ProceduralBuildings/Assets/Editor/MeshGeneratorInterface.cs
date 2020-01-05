@@ -15,14 +15,14 @@ public class MeshGeneratorInterface : Editor
         generatorController = (GeneratorController)target;
         base.OnInspectorGUI();
 
-        /* if (GUILayout.Button("Export", GUILayout.Width(100)))
+         if (GUILayout.Button("Export", GUILayout.Width(100)))
          {
              if (!String.IsNullOrEmpty(generatorController.path))
              {
-                 ObjExporter.DoExport(false, generatorController.GetExportObj(), generatorController.path);
+                 ObjExporter.DoExport(false, generatorController.parentObj, generatorController.path);
 
              }
-         }*/
+         }
         if (GUILayout.Button("Merge Mesh", GUILayout.Width(120)))
         {
             generatorController.Merge();

@@ -27,7 +27,11 @@ public class BaseParams : SegmentParams
     public DoorParams doorParams;
     public BaseParams(Vector3 foundationFinalSize,BuildingParams buildingParams, OpeningStyle windowStyle, OpeningStyle doorStyle)
     {
-        baseObjSize = BaseObjSizes.baseSize;
+        if (buildingParams.generateCornerPillars)
+            baseObjSize = BaseObjSizes.baseSizeWPillars;
+        else
+            baseObjSize = BaseObjSizes.baseSizeNoPillars;
+
         floorNum = 0;
         this.windowStyle = windowStyle;
         this.doorStyle = doorStyle;
@@ -43,7 +47,11 @@ public class BaseParams : SegmentParams
     }
     public BaseParams(Vector3 lastFloorFinalSize, BuildingParams buildingParams, int floorNum, OpeningStyle windowStyle)
     {
-        baseObjSize = BaseObjSizes.baseSize;
+        if (buildingParams.generateCornerPillars)
+            baseObjSize = BaseObjSizes.baseSizeWPillars;
+        else
+            baseObjSize = BaseObjSizes.baseSizeNoPillars;
+
         this.floorNum = floorNum;
         this.windowStyle = windowStyle;
 

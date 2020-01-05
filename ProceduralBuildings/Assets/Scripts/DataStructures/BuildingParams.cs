@@ -13,6 +13,8 @@ public class BuildingParams
     public bool leftFirewall, rightFirewall, backFirewall;
     public bool rowSameLit;
     public bool sameSizeFloors;
+
+    public bool generateCornerPillars;
     public BuildingParams(
         bool leftFirewall,
         bool rightFirewall,
@@ -23,7 +25,8 @@ public class BuildingParams
         bool rowSameLit,
         bool sameSizeFloors,
         int minStoriesCount,
-        int maxStoriesCount)
+        int maxStoriesCount,
+        bool generateCornerPillars)
     {
         this.minStoriesCount = minStoriesCount;
         this.maxStoriesCount = maxStoriesCount;
@@ -35,5 +38,6 @@ public class BuildingParams
         this.customBuildingSizeX = customBuildingSizeX;
         this.customBuildingSizeZ = customBuildingSizeZ;
         this.sameSizeFloors = sameSizeFloors;
+        this.generateCornerPillars = generateCornerPillars;
     }
 }

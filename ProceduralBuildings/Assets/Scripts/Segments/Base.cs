@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
-
 public class Base : Segment
 {
     private const string name = "base";
     public List<Window> windows;
     public Door door;
-    public Base(ref BaseParams baseParams, Transform parent, Material material, BaseParams lastBaseParams = null,
+    public Base(ref BaseParams baseParams, Transform parent, Material material,BuildingParams buildingParams, BaseParams lastBaseParams = null,
         Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
@@ -22,17 +20,22 @@ public class Base : Segment
         Vector3[] vertices = mesh.vertices;
 
         AlterCubeSize(baseParams.finalSize, baseParams.baseObjSize, ref vertices);
-        AddSidePilars(
-            ref vertices,
-            baseParams.backFirewall,
-            baseParams.leftFirewall,
-            baseParams.rightFirewall,
-            baseParams.sideDecorWidth,
-            baseParams.sideDecorDepth,
-            ref baseParams.addedDecorWidth,
-            baseParams.finalSize,
-            baseObjSize,
-            lastBaseParams);
+
+        if (buildingParams.generateCornerPillars)
+        {
+            AddSidePilars(
+                ref vertices,
+                baseParams.backFirewall,
+                baseParams.leftFirewall,
+                baseParams.rightFirewall,
+                baseParams.sideDecorWidth,
+                baseParams.sideDecorDepth,
+                ref baseParams.addedDecorWidth,
+                baseParams.finalSize,
+                baseObjSize,
+                lastBaseParams);
+        }
+
         mesh.vertices = vertices;
 
         if (baseParams.floorNum == 0)
@@ -46,13 +49,18 @@ public class Base : Segment
         mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         vertices = mesh.vertices;
 
-        obj.GetComponent<MeshFilter>().sharedMesh.uv = GenerateUVs(vertices.Length, baseObjSize, baseParams.wallsColor,
-            baseParams.pillarsColor);
+        if (buildingParams.generateCornerPillars)
+            obj.GetComponent<MeshFilter>().sharedMesh.uv = GenerateUVsWPillars(vertices.Length, baseObjSize,
+                baseParams.wallsColor,
+                baseParams.pillarsColor);
+        else
+            obj.GetComponent<MeshFilter>().sharedMesh.uv = GenerateUVs(vertices.Length, baseParams.wallsColor);
+            
         obj.transform.localPosition = baseParams.finalPos;
     }
 
 
-    protected Vector2[] GenerateUVs(int verticesLength, Vector3Int baseObjSize, Vector2Int _wallsColor,
+    protected Vector2[] GenerateUVsWPillars(int verticesLength, Vector3Int baseObjSize, Vector2Int _wallsColor,
         Vector2Int _pillarsColor)
     {
         Vector2 wallsColor = GetColorPosition(_wallsColor);

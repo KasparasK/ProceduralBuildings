@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public enum OpeningStyle
@@ -38,23 +36,23 @@ public class Building
 
         GenerateSegmentParams(buildingParams);
 
-        GenerateSegments(material, parent, vertexVisualiser);
+        GenerateSegments(buildingParams,material, parent, vertexVisualiser);
     }
 
-    void GenerateSegments(Material material, Transform parent, VertexVisualiser vertexVisualiser)
+    void GenerateSegments(BuildingParams buildingParams, Material material, Transform parent, VertexVisualiser vertexVisualiser)
     {
-        foundation = new Foundation(material, parent, foundationParams);
+        foundation = new Foundation(material, parent, foundationParams, buildingParams);
 
         for (int i = 0; i < floorCount; i++)
         {
             if (i == 0)
             {
-                bases[i] = new Base(ref baseParams[i], foundation.obj.transform, material, null, vertexVisualiser.VisualiseVertices);
+                bases[i] = new Base(ref baseParams[i], foundation.obj.transform, material,buildingParams, null, vertexVisualiser.VisualiseVertices);
                 bases[i].GenerateDoor(baseParams[i].doorParams, material);
             }
             else
             {
-                bases[i] = new Base(ref baseParams[i], bases[i - 1].obj.transform, material, baseParams[i - 1], vertexVisualiser.VisualiseVertices);
+                bases[i] = new Base(ref baseParams[i], bases[i - 1].obj.transform, material, buildingParams, baseParams[i - 1], vertexVisualiser.VisualiseVertices);
             }
 
 

@@ -10,7 +10,7 @@ public class Foundation : Segment
     public float addedDecorWidth;
 
 
-    public Foundation(Material material, Transform parent, FoundationParams foundationParams, Action<Vector3[]> verticesDebugger = null)
+    public Foundation(Material material, Transform parent, FoundationParams foundationParams,BuildingParams buildingParams, Action<Vector3[]> verticesDebugger = null)
     {
         base.verticesDebugger = verticesDebugger;
 
@@ -26,8 +26,12 @@ public class Foundation : Segment
         AlterCubeSize(foundationParams.finalSize, baseObjSize, ref vertices);
         obj.transform.localPosition = foundationParams.finalPos;
 
-        AddSidePilars(ref vertices, false, false, false, sideDecorWidth, sideDecorDepth, ref addedDecorWidth,
-            foundationParams.finalSize, baseObjSize, null);
+        if (buildingParams.generateCornerPillars)
+        {
+            AddSidePilars(ref vertices, false, false, false, sideDecorWidth, sideDecorDepth, ref addedDecorWidth,
+                foundationParams.finalSize, baseObjSize, null);
+        }
+
         mesh.vertices = vertices;
 
         int removeFrom = CalculateRingSize(baseObjSize) * (baseObjSize.y + 1)+((baseObjSize.x + 1) * (baseObjSize.z + 1));

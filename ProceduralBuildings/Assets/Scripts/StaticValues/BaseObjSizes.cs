@@ -2,7 +2,8 @@
 
 public static class BaseObjSizes
 {
-   public static readonly Vector3Int baseSize = new Vector3Int(5,1,5);
+   public static readonly Vector3Int baseSizeWPillars = new Vector3Int(5,1,5);
+   public static readonly Vector3Int baseSizeNoPillars = new Vector3Int(1, 1, 1);
    public static readonly Vector3Int roofSize = new Vector3Int(1, 2, 1);
    public static readonly Vector3Int atticSize = new Vector3Int(1, 1, 1);
    public static readonly Vector3Int openingSqSize = new Vector3Int(1, 4, 1);

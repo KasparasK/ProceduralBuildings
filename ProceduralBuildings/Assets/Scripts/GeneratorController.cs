@@ -13,6 +13,8 @@ public class GeneratorController : MonoBehaviour
     public bool leftFirewall, rightFirewall, backFirewall;
     public bool rowSameLit;
 
+    public bool generateCornerPillars;
+
     public bool sameSizeFloors;
     public GameObject parentObj;
 
@@ -51,7 +53,8 @@ public class GeneratorController : MonoBehaviour
             rowSameLit,
             sameSizeFloors,
             minStoriesCount,
-            maxStoriesCount);
+            maxStoriesCount,
+            generateCornerPillars);
 
         Building building = new Building(buildingParams, material, parentObj.transform, VertexVisualiser);
         endTime = EditorApplication.timeSinceStartup;
@@ -75,7 +78,8 @@ public class GeneratorController : MonoBehaviour
             rowSameLit,
             sameSizeFloors,
             minStoriesCount,
-            maxStoriesCount);
+            maxStoriesCount,
+            generateCornerPillars);
 
         for (int i = 0; i < retryCount; i++)
         {

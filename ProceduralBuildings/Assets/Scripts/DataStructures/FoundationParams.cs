@@ -16,7 +16,10 @@ public class FoundationParams : SegmentParams
             finalSize = GetSize();
 
         finalPos = GetPosition();
-        baseObjSize = BaseObjSizes.baseSize;
+        if (buildingParams.generateCornerPillars)
+            baseObjSize = BaseObjSizes.baseSizeWPillars;
+        else
+            baseObjSize = BaseObjSizes.baseSizeNoPillars;
     }
 
     Vector3 GetSize()
