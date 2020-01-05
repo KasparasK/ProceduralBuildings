@@ -127,14 +127,12 @@ public class OpeningsGenerator : MonoBehaviour
         float spaceForOneWin = winSize.x + maxGap * 2;
 
         int winCount = (int)(spaceForWindows / spaceForOneWin);
-        Debug.Log(spaceForWindows);
 
         float SpaceForOneWindow = spaceForWindows/ winCount; //atemus tarpa nuo kampo kiek lieka vienam langui
         float step = (SpaceForOneWindow - winSize.x) / 2;
 
         Vector3 addBefore = new Vector3(step, 0, 0);
         Vector3 addAfter = new Vector3(winSize.x+step, 0, 0);
-        Debug.Log(minX + step);
         DistributePostionsAndRotationsEvenly(
             new Vector3(minX+winSize.x, y, windowOffset),
             Quaternion.Euler(new Vector3(0, 180, 0)),

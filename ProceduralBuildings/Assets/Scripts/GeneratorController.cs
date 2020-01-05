@@ -10,24 +10,45 @@ public class GeneratorController : MonoBehaviour
 
     public Material material;
 
+    public const int maxFloors = 6;
+    public const int minFloors = 1;
+
+    public const float maxSizeX = 10;
+    public const float maxSizeZ = 10;
+    public const float minSizeX = 1;
+    public const float minSizeZ = 1;
+
+    [HideInInspector]
     public bool leftFirewall, rightFirewall, backFirewall;
+    [HideInInspector]
     public bool rowSameLit;
-
+    [HideInInspector]
     public bool generateCornerPillars;
-
+    [HideInInspector]
     public bool sameSizeFloors;
     public GameObject parentObj;
 
     public VertexVisualiser VertexVisualiser;
-
+    [HideInInspector]
     public bool useCustomBuildingSize;
-        [Range(2,10)]
-    public float customBuildingSizeX;
-    [Range(2, 10)]
 
-    public float customBuildingSizeZ;
+    [HideInInspector]
+    public float customBuildingSizeX, customBuildingSizeZ;
 
+    [HideInInspector]
     public int minStoriesCount, maxStoriesCount;
+
+    public float MaxStoriesCount
+    {
+        get { return maxStoriesCount; }
+        set { maxStoriesCount = (int) value; }
+    }
+
+    public float MinStoriesCount
+    {
+        get { return minStoriesCount; }
+        set { minStoriesCount = (int)value; }
+    }
 
     private double startTime;
     private double endTime;
