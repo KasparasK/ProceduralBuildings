@@ -58,6 +58,9 @@ public class MeshGeneratorInterface : Editor
         HorizontalLine(Color.black);
 
         TestButtons();
+        HorizontalLine(Color.black);
+
+        Demonstration();
         GUILayout.EndVertical();
     }
 
@@ -196,5 +199,13 @@ public class MeshGeneratorInterface : Editor
         }
         GUILayout.Space(5);
 
+    }
+
+    void Demonstration()
+    {
+        if (GUILayout.Button("Generate City", GUILayout.Width(200)))
+        {
+            generatorController.GenerateCity();
+        }
     }
 }

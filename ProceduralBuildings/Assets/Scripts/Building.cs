@@ -18,7 +18,7 @@ public class Building
     private AtticParams atticParams;
 
     private Foundation foundation;
-    private FoundationParams foundationParams;
+    public FoundationParams foundationParams;
 
     private Chimney chimney;
     private ChimneyParams chimneyParams;

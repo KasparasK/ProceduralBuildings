@@ -18,6 +18,8 @@ public class GeneratorController : MonoBehaviour
     public const float minSizeX = 1;
     public const float minSizeZ = 1;
 
+    public CityGeneration cityGeneration;
+
     [HideInInspector]
     public bool leftFirewall, rightFirewall, backFirewall;
 
@@ -88,7 +90,10 @@ public class GeneratorController : MonoBehaviour
 
     }
 
-
+    public void GenerateCity()
+    {
+        cityGeneration.Generate(material);
+    }
     public void GenerationTest()
     {
         double totalTime = 0;
