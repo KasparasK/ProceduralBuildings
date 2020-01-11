@@ -92,7 +92,22 @@ public class GeneratorController : MonoBehaviour
 
     public void GenerateCity()
     {
-        cityGeneration.Generate(material);
+        BuildingParams buildingParams = new BuildingParams(
+            leftFirewall,
+            rightFirewall,
+            backFirewall,
+            useCustomBuildingSize,
+            customBuildingSizeX,
+            customBuildingSizeZ,
+            rowSameLit,
+            sameSizeFloors,
+            minStoriesCount,
+            maxStoriesCount,
+            generateCornerPillars,
+            onlySquareOpenings,
+            onlyArchedOpenings);
+
+        cityGeneration.Generate(material, buildingParams);
     }
     public void GenerationTest()
     {

@@ -6,114 +6,158 @@ public class CityGeneration : MonoBehaviour
 {
     private List<Building> buildings;
     private GameObject mainParent;
-    public void Generate(Material material)
+    private GameObject quarterParent;
+    private GameObject parentObj;
+    private CombineMeshes combineMeshes;
+    int buildingCountSide = 5;
+    private int gridSize = 2;
+    GameObject GenerateQuarter(Material material, List<Vector2> sizes, BuildingParams buildingParams)
     {
-        if(mainParent !=null)
-            DestroyImmediate(mainParent);
-        mainParent = new GameObject();
-        mainParent.transform.position = Vector3.zero;
-        mainParent.name = "CityBlock";
-
+      
         
-        Vector3 posToSet = Vector3.zero;
-        buildings = new List<Building>();
-        int buildingCountSide = 5;
+            buildingParams.useCustomBuildingSize = true;
+            buildingParams.rightFirewall = true;
+            buildingParams.backFirewall = true;
+            buildingParams.leftFirewall = false;
 
-        BuildingParams buildingParams = new BuildingParams(
-            false,
-            true,
-            true,
-            false,
-            0,
-            0,
-            false,
-            false,
-            1,
-            5,
-            true,
-            false,
-            false);
-        {
-            GameObject parentObj = new GameObject();
-            parentObj.transform.position = Vector3.zero;
-            parentObj.name = "Building";
-            parentObj.transform.parent = mainParent.transform;
 
-            buildings.Add(new Building(buildingParams, material, parentObj.transform));
+            quarterParent = new GameObject();
+            quarterParent.transform.position = Vector3.zero;
+            quarterParent.name = "CityBlock";
 
-            int id = 1;
+
+            Vector3 posToSet = Vector3.zero;
+            buildings = new List<Building>();
+
+            int id = 0;
             int yAngle = 0;
 
-            posToSet.x += buildings[0].foundationParams.finalSize.x;
+            posToSet.x += sizes[0].y;
 
             for (int j = 0; j < 4; j++)
-        {
-            for (int i = 1; i < buildingCountSide; i++, id++)
             {
-                if(j == 3 && i == buildingCountSide-1)
-                    break;
-                
-                parentObj = new GameObject();
-                parentObj.transform.position = Vector3.zero;
-                parentObj.name = "Building";
+                for (int i = 0; i < buildingCountSide - 1; i++, id++)
+                {
 
-                if (i == buildingCountSide - 1)
-                {
-                    buildingParams.rightFirewall = false;
-                }
-                else
-                {
-                    buildingParams.leftFirewall = true;
-                }
-                buildings.Add(new Building(buildingParams, material, parentObj.transform));
-                if (i != 1)
-                {
-                    switch (j)
+                    parentObj = new GameObject();
+                    parentObj.transform.position = Vector3.zero;
+                    parentObj.name = "Building";
+
+                    buildingParams.customBuildingSizeX = sizes[i].x;
+                    buildingParams.customBuildingSizeZ = sizes[i].y;
+
+                    if (i == buildingCountSide - 2)
                     {
-                        case 0:
-                            posToSet.x += buildings[id - 1].foundationParams.finalSize.x;
-                            break;
-                        case 1:
-                            posToSet.z += buildings[id - 1].foundationParams.finalSize.x;
-                            break;
-                        case 2:
-                            posToSet.x -= buildings[id - 1].foundationParams.finalSize.x;
-                            break;
-                        case 3:
-                            posToSet.z -= buildings[id - 1].foundationParams.finalSize.x;
-                            break;
+                        buildingParams.rightFirewall = false;
                     }
+                    else
+                    {
+                        buildingParams.leftFirewall = true;
+                    }
+                    buildings.Add(new Building(buildingParams, material, parentObj.transform));
+                    if (i != 0)
+                    {
+                        switch (j)
+                        {
+                            case 0:
+                                posToSet.x += buildings[id - 1].foundationParams.finalSize.x;
+                                break;
+                            case 1:
+                                posToSet.z += buildings[id - 1].foundationParams.finalSize.x;
+                                break;
+                            case 2:
+                                posToSet.x -= buildings[id - 1].foundationParams.finalSize.x;
+                                break;
+                            case 3:
+                                posToSet.z -= buildings[id - 1].foundationParams.finalSize.x;
+                                break;
+                        }
+                    }
+                   
+                    combineMeshes.MergeChildren(parentObj);
+
+                    parentObj.transform.position = posToSet;
+                    parentObj.transform.rotation = Quaternion.Euler(new Vector3(0, yAngle, 0));
+                    parentObj.transform.parent = quarterParent.transform;
+
+
                 }
 
-                parentObj.transform.position = posToSet;
-                parentObj.transform.rotation = Quaternion.Euler(new Vector3(0, yAngle, 0));
-                parentObj.transform.parent = mainParent.transform;
-            }
+                yAngle -= 90;
+                buildingParams.rightFirewall = true;
+                switch (j)
+                {
+                    case 0:
+                        posToSet.x += buildings[id - 1].foundationParams.finalSize.x;
+                        posToSet.z += buildings[id - 1].foundationParams.finalSize.z;
+                        break;
+                    case 1:
+                        posToSet.z += buildings[id - 1].foundationParams.finalSize.x;
+                        posToSet.x -= buildings[id - 1].foundationParams.finalSize.z;
 
-            yAngle -= 90;
-            buildingParams.rightFirewall = true;
-            switch (j)
+                        break;
+                    case 2:
+                        posToSet.x -= buildings[id - 1].foundationParams.finalSize.x;
+                        posToSet.z -= buildings[id - 1].foundationParams.finalSize.z;
+                        break;
+                }
+
+            }
+        
+        return quarterParent;
+    }
+    public void Generate(Material material, BuildingParams buildingParams)
+    {
+        if (mainParent != null)
+            DestroyImmediate(mainParent);
+
+        mainParent = new GameObject();
+        mainParent.name = "City";
+        combineMeshes = new CombineMeshes();
+        float rowLength = GetRowLength(buildingCountSide);
+        List<Vector2> sizes = GetFoundionSizes(buildingCountSide, rowLength);
+
+        float quarterLength = rowLength + sizes[sizes.Count-1].y;
+        float roadWidth = 2;
+        for (int y = 0; y < gridSize; y++)
+        {
+            for (int x = 0; x < gridSize; x++)
             {
-                case 0:
-                    posToSet.x += buildings[id - 1].foundationParams.finalSize.x;
-                    posToSet.z += buildings[id - 1].foundationParams.finalSize.z;
-                    break;
-                case 1:
-                    posToSet.z += buildings[id - 1].foundationParams.finalSize.x;
-                    posToSet.x -= buildings[id - 1].foundationParams.finalSize.z;
-
-                        break;
-                case 2:
-                    posToSet.x -= buildings[id - 1].foundationParams.finalSize.x;
-                    posToSet.z -= buildings[id - 1].foundationParams.finalSize.z;
-                        break;
-                case 3:
-                 //   posToSet.z -= buildings[id - 1].foundationParams.finalSize.z;
-                    break;
+                GameObject quarter = GenerateQuarter(material, sizes, buildingParams);
+                quarter.transform.parent = mainParent.transform;
+                quarter.transform.position = new Vector3(x * quarterLength+roadWidth*x,0, y * quarterLength + roadWidth * y);
             }
+        }
+     
 
+    }
+
+    List<Vector2> GetFoundionSizes(int houseCount,float rowLength)
+    {
+        List<Vector2> sizes = new List<Vector2>();
+        houseCount--;
+        float xUsed = 0;
+        float spaceForOne = rowLength / houseCount;
+        float x, z;
+        for (int i = 0; i < houseCount - 1; i++)
+        {
+            x = Random.Range(3, spaceForOne);
+            z = Random.Range(3.5f, 4f);
+
+            sizes.Add(new Vector2(x,z));
+            xUsed += x;
         }
-        }
-       
+
+        x = rowLength - xUsed;
+        z = Random.Range(3.5f, 4f);
+
+        sizes.Add(new Vector2(x, z));
+
+        return sizes;
+    }
+
+    float GetRowLength(int count)
+    {
+        return Random.Range((float)((count - 1) * 2.5), (float)((count - 1) * 3f));
     }
 }
