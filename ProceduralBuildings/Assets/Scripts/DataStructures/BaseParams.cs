@@ -13,7 +13,7 @@ public class BaseParams : SegmentParams
     public readonly Vector3 addToLastSize = new Vector3(0.7f, 0.3f, 0.7f);
     public readonly Vector3 minBaseSize = new Vector3(3, 1, 3.5f);
 
-    readonly  Vector3 addToFoundationSize = new Vector3(-0.1f,1,-0.1f);
+    public readonly  Vector3 addToFoundationSize = new Vector3(-0.1f,1,-0.1f);
 
     public readonly float sideDecorWidth = 0.2f;
     public readonly float sideDecorDepth = 0.07f;
@@ -74,7 +74,7 @@ public class BaseParams : SegmentParams
         pillarsColor = ColorManager.GetPillarsColor();
 
     }
-    Vector3 GetGroundFloorFinalPosition(Vector3 lastFloorFinalSize)
+    public Vector3 GetGroundFloorFinalPosition(Vector3 lastFloorFinalSize)
     {
         float x = (lastFloorFinalSize.x - finalSize.x) / 2;
         float y = lastFloorFinalSize.y;
@@ -84,7 +84,7 @@ public class BaseParams : SegmentParams
         return finalPosition;
     }
 
-    Vector3 GetFinalPosition(Vector3 lastFloorFinalSize)
+    public Vector3 GetFinalPosition(Vector3 lastFloorFinalSize)
     {
         float x = (lastFloorFinalSize.x - finalSize.x) / 2;
         float y =  lastFloorFinalSize.y;
@@ -101,7 +101,7 @@ public class BaseParams : SegmentParams
         return finalPosition;
     }
 
-    Vector3 GetGroundFloorFinalSize(Vector3 foundationSize, Vector3 minBaseSize, Vector3 addToLastSize)
+    public Vector3 GetGroundFloorFinalSize(Vector3 foundationSize, Vector3 minBaseSize, Vector3 addToLastSize)
     {
         Vector3 maxSize = foundationSize + addToLastSize;
         Vector3 finalSize = new Vector3(
@@ -113,7 +113,7 @@ public class BaseParams : SegmentParams
 
         return finalSize;
     }
-    Vector3 GetFinalSize(Vector3 lastFloorSize,Vector3 addToLastSize)
+    public Vector3 GetFinalSize(Vector3 lastFloorSize,Vector3 addToLastSize)
     {
         Vector3 tempAddToLast = addToLastSize;
 

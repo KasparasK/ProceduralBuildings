@@ -18,6 +18,8 @@ public class GeneratorController : MonoBehaviour
     public const float minSizeX = 1;
     public const float minSizeZ = 1;
 
+    public CityGeneration cityGeneration;
+
     [HideInInspector]
     public bool leftFirewall, rightFirewall, backFirewall;
 
@@ -67,33 +69,46 @@ public class GeneratorController : MonoBehaviour
         parentObj.transform.position= Vector3.zero;
         parentObj.name = "Building";
 
-        BuildingParams buildingParams = new BuildingParams(
-            leftFirewall,
-            rightFirewall, 
-            backFirewall,
-            useCustomBuildingSize,
-            customBuildingSizeX,
-            customBuildingSizeZ,
-            rowSameLit,
-            sameSizeFloors,
-            minStoriesCount,
-            maxStoriesCount,
-            generateCornerPillars, 
-            onlySquareOpenings,
-            onlyArchedOpenings);
-
-        Building building = new Building(buildingParams, material, parentObj.transform);
+        Building building = new Building(CreateBuildingParams(), material, parentObj.transform);
         endTime = EditorApplication.timeSinceStartup;
         Debug.Log("Generation finished. Duration: " + (endTime - startTime) * 1000 + " ms");
 
     }
 
-
+    public void GenerateCity()
+    {
+        cityGeneration.Generate(material, CreateBuildingParams());
+    }
     public void GenerationTest()
     {
         double totalTime = 0;
         int retryCount = 200;
 
+      
+
+        for (int i = 0; i < retryCount; i++)
+        {
+            startTime = EditorApplication.timeSinceStartup;
+
+            if (parentObj != null)
+                DestroyImmediate(parentObj);
+
+            parentObj = new GameObject();
+            parentObj.transform.position = Vector3.zero;
+            parentObj.name = "Building";
+
+            Building building = new Building(CreateBuildingParams(), material, parentObj.transform);
+            endTime = EditorApplication.timeSinceStartup;
+
+            totalTime += (endTime - startTime);
+        }
+
+        Debug.Log("Generation test finished.Average duration: " + totalTime/ retryCount * 1000 + " ms");
+
+    }
+
+    BuildingParams CreateBuildingParams()
+    {
         BuildingParams buildingParams = new BuildingParams(
             leftFirewall,
             rightFirewall,
@@ -109,28 +124,8 @@ public class GeneratorController : MonoBehaviour
             onlySquareOpenings,
             onlyArchedOpenings);
 
-        for (int i = 0; i < retryCount; i++)
-        {
-            startTime = EditorApplication.timeSinceStartup;
-
-            if (parentObj != null)
-                DestroyImmediate(parentObj);
-
-            parentObj = new GameObject();
-            parentObj.transform.position = Vector3.zero;
-            parentObj.name = "Building";
-
-            Building building = new Building(buildingParams, material, parentObj.transform);
-            endTime = EditorApplication.timeSinceStartup;
-
-            totalTime += (endTime - startTime);
-        }
-
-        Debug.Log("Generation test finished.Average duration: " + totalTime/ retryCount * 1000 + " ms");
-
+        return buildingParams;
     }
-
-
     public void Merge()
     {
        CombineMeshes combineMeshes = new CombineMeshes();

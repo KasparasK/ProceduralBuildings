@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ArcGenerator 
 {
-    public Vector3[] GenerationZwei(float angle,float distance, Vector3 toAdd,int resolution)
+    public Vector3[] Generate(float angle,float distance, Vector3 toAdd,int resolution)
     {
         float g =  Mathf.Abs(Physics.gravity.y); //gravity on y
         float velocity;
