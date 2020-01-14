@@ -10,12 +10,12 @@ public class RoofParams : SegmentParams
     public RoofParams(Vector3 atticSize,Vector3 lastBaseSize)
     {
         baseObjSize = BaseObjSizes.roofSize;
-        finalSize = GetFinalSize(atticSize);
+        finalSize = GetFinalSize(atticSize, zToAdd, GetThicknessOfRoof());
         finalPos = GetFinalPosition(lastBaseSize,finalSize);
         roofThiccness = GetThicknessOfRoof();
 
     }
-    Vector3 GetFinalPosition(Vector3 lastBaseSize, Vector3 currSize)
+    public Vector3 GetFinalPosition(Vector3 lastBaseSize, Vector3 currSize)
     {
 
         float x = 0;
@@ -30,15 +30,12 @@ public class RoofParams : SegmentParams
         return Random.Range(0.1f, 0.2f);
     }
 
-    Vector3 GetFinalSize(Vector3 atticSize)
+     public Vector3 GetFinalSize(Vector3 atticSize, float zToAdd, float roofThiccness)
     {
-        float length = atticSize.z;
-        float halfY = atticSize.y;
+        float y = atticSize.y * 2;
 
-        float y = halfY * 2;
+        float z = atticSize.z + zToAdd;
 
-        float z = length + zToAdd;
-
-        return new Vector3(GetThicknessOfRoof(), y, z);
+        return new Vector3(roofThiccness, y, z);
     }
 }

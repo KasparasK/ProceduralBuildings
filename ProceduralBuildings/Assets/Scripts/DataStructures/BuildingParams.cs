@@ -42,4 +42,21 @@
         this.onlySquareOpenings = onlySquareOpenings;
         this.onlyArchedOpenings = onlyArchedOpenings;
     }
+
+    public BuildingParams()
+    {
+        this.minStoriesCount = 1;
+        this.maxStoriesCount = 5;
+        this.rightFirewall = false;
+        this.leftFirewall = false;
+        this.backFirewall = false;
+        this.rowSameLit = false;
+        this.useCustomBuildingSize = false;
+        this.customBuildingSizeX = 2;
+        this.customBuildingSizeZ = 2;
+        this.sameSizeFloors = false;
+        this.generateCornerPillars = false;
+        this.onlySquareOpenings = false;
+        this.onlyArchedOpenings = false;
+    }
 }

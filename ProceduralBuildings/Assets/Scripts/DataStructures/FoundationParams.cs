@@ -13,16 +13,16 @@ public class FoundationParams : SegmentParams
         if (buildingParams.useCustomBuildingSize)
             finalSize = new Vector3(buildingParams.customBuildingSizeX, minFoundationSize.y, buildingParams.customBuildingSizeZ);
         else
-            finalSize = GetSize();
+            finalSize = GetFinalSize();
 
-        finalPos = GetPosition();
+        finalPos = GetFinalPosition();
         if (buildingParams.generateCornerPillars)
             baseObjSize = BaseObjSizes.baseSizeWPillars;
         else
             baseObjSize = BaseObjSizes.baseSizeNoPillars;
     }
 
-    Vector3 GetSize()
+    Vector3 GetFinalSize()
     {
         Vector3 finalSize = new Vector3(
             Random.Range(minFoundationSize.x, maxFoundationSize.x),
@@ -32,7 +32,7 @@ public class FoundationParams : SegmentParams
 
         return finalSize;
     }
-    Vector3 GetPosition()
+    Vector3 GetFinalPosition()
     {
         return  Vector3.zero;
     }

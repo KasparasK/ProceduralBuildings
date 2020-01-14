@@ -23,8 +23,6 @@ public class Building
     private Chimney chimney;
     private ChimneyParams chimneyParams;
 
-    private Door door;
-
     private int floorCount;
     public Building(BuildingParams buildingParams, Material material, Transform parent)
     {

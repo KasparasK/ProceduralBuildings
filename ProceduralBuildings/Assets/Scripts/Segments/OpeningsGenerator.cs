@@ -377,13 +377,13 @@ public class OpeningsGenerator : MonoBehaviour
 
         int arcPoints = BaseObjSizes.openingArcSize.y - 3;
 
-        outerArcF = arcGenerator.GenerationZwei(angle, winSize.x, new Vector3(0, winSize.y, 0), arcPoints);
-        outerArcB = arcGenerator.GenerationZwei(angle, winSize.x, new Vector3(0, winSize.y, frameDimensions.z), arcPoints);
+        outerArcF = arcGenerator.Generate(angle, winSize.x, new Vector3(0, winSize.y, 0), arcPoints);
+        outerArcB = arcGenerator.Generate(angle, winSize.x, new Vector3(0, winSize.y, frameDimensions.z), arcPoints);
 
         float addX = (winSize.x - (winSize.x - frameDimensions.x * 2)) / 2;
 
-        innerArcF = arcGenerator.GenerationZwei(angle, winSize.x - frameDimensions.x * 2, new Vector3(addX, winSize.y, 0), arcPoints);
-        innerArcB = arcGenerator.GenerationZwei(angle, winSize.x - frameDimensions.x * 2, new Vector3(addX, winSize.y, frameDimensions.z), arcPoints);
+        innerArcF = arcGenerator.Generate(angle, winSize.x - frameDimensions.x * 2, new Vector3(addX, winSize.y, 0), arcPoints);
+        innerArcB = arcGenerator.Generate(angle, winSize.x - frameDimensions.x * 2, new Vector3(addX, winSize.y, frameDimensions.z), arcPoints);
 
         float arcHeight = outerArcB[arcPoints / 2 - 1].y - outerArcB[0].y;
 

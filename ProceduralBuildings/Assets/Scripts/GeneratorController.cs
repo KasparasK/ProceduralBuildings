@@ -69,22 +69,7 @@ public class GeneratorController : MonoBehaviour
         parentObj.transform.position= Vector3.zero;
         parentObj.name = "Building";
 
-        BuildingParams buildingParams = new BuildingParams(
-            leftFirewall,
-            rightFirewall, 
-            backFirewall,
-            useCustomBuildingSize,
-            customBuildingSizeX,
-            customBuildingSizeZ,
-            rowSameLit,
-            sameSizeFloors,
-            minStoriesCount,
-            maxStoriesCount,
-            generateCornerPillars, 
-            onlySquareOpenings,
-            onlyArchedOpenings);
-
-        Building building = new Building(buildingParams, material, parentObj.transform);
+        Building building = new Building(CreateBuildingParams(), material, parentObj.transform);
         endTime = EditorApplication.timeSinceStartup;
         Debug.Log("Generation finished. Duration: " + (endTime - startTime) * 1000 + " ms");
 
@@ -92,42 +77,14 @@ public class GeneratorController : MonoBehaviour
 
     public void GenerateCity()
     {
-        BuildingParams buildingParams = new BuildingParams(
-            leftFirewall,
-            rightFirewall,
-            backFirewall,
-            useCustomBuildingSize,
-            customBuildingSizeX,
-            customBuildingSizeZ,
-            rowSameLit,
-            sameSizeFloors,
-            minStoriesCount,
-            maxStoriesCount,
-            generateCornerPillars,
-            onlySquareOpenings,
-            onlyArchedOpenings);
-
-        cityGeneration.Generate(material, buildingParams);
+        cityGeneration.Generate(material, CreateBuildingParams());
     }
     public void GenerationTest()
     {
         double totalTime = 0;
         int retryCount = 200;
 
-        BuildingParams buildingParams = new BuildingParams(
-            leftFirewall,
-            rightFirewall,
-            backFirewall,
-            useCustomBuildingSize,
-            customBuildingSizeX,
-            customBuildingSizeZ,
-            rowSameLit,
-            sameSizeFloors,
-            minStoriesCount,
-            maxStoriesCount,
-            generateCornerPillars,
-            onlySquareOpenings,
-            onlyArchedOpenings);
+      
 
         for (int i = 0; i < retryCount; i++)
         {
@@ -140,7 +97,7 @@ public class GeneratorController : MonoBehaviour
             parentObj.transform.position = Vector3.zero;
             parentObj.name = "Building";
 
-            Building building = new Building(buildingParams, material, parentObj.transform);
+            Building building = new Building(CreateBuildingParams(), material, parentObj.transform);
             endTime = EditorApplication.timeSinceStartup;
 
             totalTime += (endTime - startTime);
@@ -150,7 +107,25 @@ public class GeneratorController : MonoBehaviour
 
     }
 
+    BuildingParams CreateBuildingParams()
+    {
+        BuildingParams buildingParams = new BuildingParams(
+            leftFirewall,
+            rightFirewall,
+            backFirewall,
+            useCustomBuildingSize,
+            customBuildingSizeX,
+            customBuildingSizeZ,
+            rowSameLit,
+            sameSizeFloors,
+            minStoriesCount,
+            maxStoriesCount,
+            generateCornerPillars,
+            onlySquareOpenings,
+            onlyArchedOpenings);
 
+        return buildingParams;
+    }
     public void Merge()
     {
        CombineMeshes combineMeshes = new CombineMeshes();

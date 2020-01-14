@@ -17,7 +17,7 @@ public class CityGeneration : MonoBehaviour
         
             buildingParams.useCustomBuildingSize = true;
             buildingParams.rightFirewall = true;
-            buildingParams.backFirewall = true;
+            buildingParams.backFirewall = false;
             buildingParams.leftFirewall = false;
 
 
@@ -49,12 +49,15 @@ public class CityGeneration : MonoBehaviour
                     if (i == buildingCountSide - 2)
                     {
                         buildingParams.rightFirewall = false;
-                    }
+                        buildingParams.backFirewall = true;
+                }
                     else
                     {
                         buildingParams.leftFirewall = true;
-                    }
-                    buildings.Add(new Building(buildingParams, material, parentObj.transform));
+                        buildingParams.backFirewall = false;
+
+                }
+                buildings.Add(new Building(buildingParams, material, parentObj.transform));
                     if (i != 0)
                     {
                         switch (j)
