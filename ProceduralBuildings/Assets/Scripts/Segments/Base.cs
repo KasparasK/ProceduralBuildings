@@ -14,6 +14,12 @@ public class Base : Segment
         GenerateBaseCube(material, baseParams.baseObjSize, name);
 
         obj.transform.parent = parent;
+
+        AlterMesh(ref baseParams, baseObjSize, buildingParams, lastBaseParams);
+    }
+
+    void AlterMesh(ref BaseParams baseParams, Vector3Int baseObjSize, BuildingParams buildingParams, BaseParams lastBaseParams = null)
+    {
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         Vector3[] vertices = mesh.vertices;
 
@@ -53,10 +59,9 @@ public class Base : Segment
                 baseParams.pillarsColor);
         else
             obj.GetComponent<MeshFilter>().sharedMesh.uv = GenerateUVs(vertices.Length, baseParams.wallsColor);
-            
+
         obj.transform.localPosition = baseParams.finalPos;
     }
-
 
     protected Vector2[] GenerateUVsWPillars(int verticesLength, Vector3Int baseObjSize, Vector2Int _wallsColor,
         Vector2Int _pillarsColor)

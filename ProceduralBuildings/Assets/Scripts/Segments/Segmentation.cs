@@ -6,12 +6,13 @@ using UnityEngine;
 public class Segmentation : Segment
 {
     private const string name = "segments";
-    public Segmentation(Transform parent,Vector3 winSize, Material material, SegmentationParams segmentationParams)
+    private SegmentationParams segmentationParams;
+    public Segmentation(Transform parent,Vector3 winSize, Material material, SegmentationParams _segmentationParams)
     {
-
-        GenerateSegements(parent, winSize, material, segmentationParams);
+        segmentationParams = _segmentationParams;
+        GenerateSegements(parent, winSize, material);
     }
-    void GenerateSegements(Transform parent, Vector3 winSize, Material material, SegmentationParams segmentationParams)
+    void GenerateSegements(Transform parent, Vector3 winSize, Material material)
     {
         List<GameObject> objs = new List<GameObject>();
         Vector3Int baseObjSize = BaseObjSizes.segmentationSize;

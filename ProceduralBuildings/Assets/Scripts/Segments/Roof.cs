@@ -4,17 +4,23 @@ using UnityEngine;
 public class Roof : Segment
 {
     private const string name = "roof";
-    public Roof(Material material, BaseParams lastBaseParams,RoofParams roofParams,Transform parent)
-   {
-       Vector3Int baseObjSize = roofParams.baseObjSize;
+    private RoofParams roofParams;
+    public Roof(Material material, BaseParams lastBaseParams,RoofParams _roofParams,Transform parent)
+    {
+        roofParams = _roofParams;
 
-       GenerateBaseCube(material, baseObjSize,name);
-       obj.transform.parent = parent;
-       AlterMesh(baseObjSize, lastBaseParams.finalSize, roofParams);
+        CreateBase(material, lastBaseParams, parent);
+    }
 
-   }
+    void CreateBase(Material material, BaseParams lastBaseParams, Transform parent)
+    {
+        Vector3Int baseObjSize = roofParams.baseObjSize;
 
-   void AlterMesh(Vector3Int baseCubeSize,Vector3 lastFloorSize,RoofParams roofParams)
+        GenerateBaseCube(material, baseObjSize, name);
+        obj.transform.parent = parent;
+        AlterMesh(baseObjSize, lastBaseParams.finalSize);
+    }
+   void AlterMesh(Vector3Int baseCubeSize,Vector3 lastFloorSize)
    {
        Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
 
@@ -23,17 +29,17 @@ public class Roof : Segment
        int ring = CalculateRingSize(baseCubeSize);
       
        AlterCubeSize(roofParams.finalSize, baseCubeSize,ref vertices);
-       BendRoof(roofParams.finalSize, lastFloorSize, ring, ref vertices);
+       vertices = BendRoof(roofParams.finalSize, lastFloorSize, ring,vertices);
 
        mesh.vertices = vertices;
        mesh.RecalculateNormals();
        mesh.uv = GenerateUVs(vertices.Length, roofParams.color);
        obj.transform.localPosition = roofParams.finalPos;
    }
-  
-  
 
-    void BendRoof(Vector3 goalSize, Vector3 lastBaseSize, int ring, ref Vector3[] vertices)
+
+
+   Vector3[] BendRoof(Vector3 goalSize, Vector3 lastBaseSize, int ring, Vector3[] vertices)
     {
         //pajundinti pirma zieda vertexu (apatini kairi stogo kampa)
         int tempId = 0;
@@ -111,6 +117,8 @@ public class Roof : Segment
             AlterVertexPosition(ref vertices[tempId], posToAddRightSide);
             tempId++;
         }
+
+        return vertices;
     }
 
  

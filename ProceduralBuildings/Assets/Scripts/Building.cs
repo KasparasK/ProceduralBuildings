@@ -9,7 +9,7 @@ public enum OpeningStyle
 public class Building
 {
     private Base[] bases;
-    public BaseParams[] baseParams;
+    private BaseParams[] baseParams;
 
     private Roof roof;
     private RoofParams roofParams;
@@ -58,7 +58,7 @@ public class Building
         }
 
         attic = new Attic(material, atticParams, bases[floorCount - 1].obj.transform);
-        attic.GenerateWindows(atticParams, material);
+        attic.GenerateWindows( material);
 
         roof = new Roof(material, baseParams[floorCount - 1], roofParams, bases[floorCount - 1].obj.transform);
 

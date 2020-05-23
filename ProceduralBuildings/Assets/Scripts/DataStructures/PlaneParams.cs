@@ -5,7 +5,6 @@ public class PlaneParams : SegmentParams
     public Vector2Int color;
     public Vector3[] arcPoints;
     public OpeningStyle openingStyle;
-    public Quaternion finalRot;
     public PlaneParams(OpeningStyle openingStyle, Vector2Int color, Vector3Int baseObjSize, Vector3[] arcPoints,
         Vector3 frameFinalSize, float depthOffset)
     {

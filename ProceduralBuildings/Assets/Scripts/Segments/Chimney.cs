@@ -5,8 +5,14 @@ using UnityEngine;
 public class Chimney : Segment
 {
     private const string name = "chimney";
+    private ChimneyParams chimneyParams;
+    public Chimney(ChimneyParams _chimneyParams, Material material, Transform parent)
+    {
+        chimneyParams = _chimneyParams;
+        CreateBase(material, parent);
+    }
 
-    public Chimney(ChimneyParams chimneyParams, Material material, Transform parent)
+    void CreateBase(Material material, Transform parent)
     {
         Vector3Int baseObjSize = chimneyParams.baseObjSize;
 
@@ -18,13 +24,12 @@ public class Chimney : Segment
 
         Vector3[] vertices = mesh.vertices;
 
-        AlterCubeSize(new Vector3(chimneyParams.finalSize.x, (chimneyParams.finalSize.y-(chimneyParams.finalSize.y/4)) * baseObjSize.y, chimneyParams.finalSize.z), baseObjSize, ref vertices);
-        AlterMesh(chimneyParams, baseObjSize, ref vertices);
+        AlterCubeSize(new Vector3(chimneyParams.finalSize.x, (chimneyParams.finalSize.y - (chimneyParams.finalSize.y / 4)) * baseObjSize.y, chimneyParams.finalSize.z), baseObjSize, ref vertices);
+        vertices = AlterMesh( baseObjSize, vertices);
         mesh.uv = GenerateUVs(vertices.Length, chimneyParams.color);
         mesh.vertices = vertices;
     }
-
-    void AlterMesh(ChimneyParams chimneyParams,Vector3Int baseObjSize,ref Vector3[] vertices)
+    Vector3[] AlterMesh(Vector3Int baseObjSize,Vector3[] vertices)
     {
         int ring = CalculateRingSize(baseObjSize);
 
@@ -76,5 +81,6 @@ public class Chimney : Segment
         AlterVertexPosition(ref vertices[tempID], posToAdd);
         //--------------------------------
 
+        return vertices;
     }
 }

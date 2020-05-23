@@ -14,14 +14,11 @@ public class BasePosTests
         BaseParams baseParams = new BaseParams(lastFloorSize, buildingParams, 1, OpeningStyle.ARCH);
         baseParams.finalSize = lastFloorSize + addTolastSize;
 
-
         Vector3 expextedPos = new Vector3(-0.5f, 2, -0.5f);
-
 
         Vector3 pos = baseParams.GetGroundFloorFinalPosition(lastFloorSize);
 
         Assert.That(pos.x, Is.EqualTo(expextedPos.x).Within(0.001));
-
     }
 
     [Test]

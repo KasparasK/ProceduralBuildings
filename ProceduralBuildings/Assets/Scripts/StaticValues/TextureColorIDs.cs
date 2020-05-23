@@ -12,8 +12,8 @@ public static class TextureColorIDs
     public static readonly int chimneyColorX = 4;
     public static readonly int doorColorX = 3;
 
-    public static readonly int blueWindowColorX = 16;
-    public static readonly int yellowWindowColorX = 16;
+    public static readonly int unlitWindowColorX = 16;
+    public static readonly int litWindowColorX = 16;
 }
 
 
@@ -55,13 +55,13 @@ public static class ColorManager
         return new Vector2Int(TextureColorIDs.chimneyColorX, ID);
     }
 
-    public static Vector2Int GetBlueWindowColor()
+    public static Vector2Int GetUnlitWindowColor()
     {
-        return new Vector2Int(TextureColorIDs.blueWindowColorX, 1);
+        return new Vector2Int(TextureColorIDs.unlitWindowColorX, 1);
     }
-    public static Vector2Int GetYellowWindowColor()
+    public static Vector2Int GetLitWindowColor()
     {
-        return new Vector2Int(TextureColorIDs.yellowWindowColorX, 2);
+        return new Vector2Int(TextureColorIDs.litWindowColorX, 2);
     }
     public static Vector2Int GetDoorColor()
     {

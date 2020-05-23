@@ -9,6 +9,4 @@ public class WindowParams : SegmentParams
     public PlaneParams glassParams;
 
     public OpeningStyle openingStyle;
-
-    public Quaternion finalRot;
 }

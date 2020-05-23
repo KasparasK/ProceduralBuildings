@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Plane : Segment
 {
     private const string name = "plane";
-    public Plane(Material material, Transform parent, Vector3 size, PlaneParams planeParams)
+    private readonly PlaneParams planeParams;
+    public Plane(Material material, Transform parent, Vector3 size, PlaneParams _planeParams)
+    {
+        this.planeParams = _planeParams;
+
+        CreateBase(material, parent, size);
+    }
+
+    void CreateBase(Material material, Transform parent, Vector3 size)
     {
         Vector3Int baseObjSize = planeParams.baseObjSize;
 
@@ -18,14 +23,13 @@ public class Plane : Segment
 
         Vector3[] vertices = mesh.vertices;
         AlterPlaneSize(size, baseObjSize, ref vertices);
-        if(planeParams.openingStyle == OpeningStyle.ARCH)
-            ArcThePlane(planeParams.arcPoints, ref vertices, baseObjSize);
+        if (planeParams.openingStyle == OpeningStyle.ARCH)
+            vertices = ArcThePlane(planeParams.arcPoints, vertices, baseObjSize);
         mesh.uv = GenerateUVs(vertices.Length, planeParams.color);
         mesh.vertices = vertices;
-      
     }
 
-    void ArcThePlane(Vector3[] arcPoints, ref Vector3[] vertices, Vector3Int baseObjSize)
+    Vector3[] ArcThePlane(Vector3[] arcPoints, Vector3[] vertices, Vector3Int baseObjSize)
     {
         int tempId = baseObjSize.x+=1;
    
@@ -34,5 +38,7 @@ public class Plane : Segment
             SetVertexPosition(ref vertices[tempId], arcPoints[i]);
             tempId++;
         }
+
+        return vertices;
     }
 }

@@ -4,17 +4,24 @@ using UnityEngine;
 public class ArchedOpening : Segment
 {
     private const string name = "archedOpening";
+    private ArchedOpeningParams archedOpeningParams;
 
+    public ArchedOpening(Vector3 goalSize, Material material, ArchedOpeningParams _archedOpeningParams)
+    {
+        archedOpeningParams = _archedOpeningParams;
 
-    public ArchedOpening(Vector3 goalSize, Material material, ArchedOpeningParams archedOpeningParams)
+        CreateBase(goalSize,material);
+    }
+
+    void CreateBase(Vector3 size, Material material)
     {
         Vector3Int baseObjSize = BaseObjSizes.openingArcSize;
         GenerateBaseCube(material, baseObjSize, name);
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         Vector3[] vertices = mesh.vertices;
 
-        AlterCubeSize(new Vector3(archedOpeningParams.frameDimensions.x, goalSize.y * baseObjSize.y, archedOpeningParams.frameDimensions.z), baseObjSize, ref vertices);
-        AlterMesh(goalSize, archedOpeningParams.frameDimensions, archedOpeningParams, ref vertices, baseObjSize);
+        AlterCubeSize(new Vector3(archedOpeningParams.frameDimensions.x, size.y * baseObjSize.y, archedOpeningParams.frameDimensions.z), baseObjSize, ref vertices);
+        vertices = AlterMesh(size, archedOpeningParams.frameDimensions,  vertices, baseObjSize);
 
         mesh.vertices = vertices;
 
@@ -22,10 +29,9 @@ public class ArchedOpening : Segment
         mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         mesh.vertices = vertices;
         mesh.uv = GenerateUVs(vertices.Length, archedOpeningParams.frameColor);
-
     }
 
-    void AlterMesh(Vector3 goalSize, Vector3 frameDimensions, ArchedOpeningParams archedOpeningParams, ref Vector3[] vertices,Vector3Int baseObjSize)
+    Vector3[] AlterMesh(Vector3 goalSize, Vector3 frameDimensions,Vector3[] vertices,Vector3Int baseObjSize)
     {
         int arcPoints = baseObjSize.y - 3;
 
@@ -103,6 +109,6 @@ public class ArchedOpening : Segment
             tempId++;
         }
         //---------------------------------
-
+        return vertices;
     }
 }

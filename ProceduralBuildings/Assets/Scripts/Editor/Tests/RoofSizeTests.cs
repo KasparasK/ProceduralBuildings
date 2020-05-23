@@ -4,7 +4,7 @@ public class RoofSizeTests
 {
  
     [Test]
-    public void Test_CalculateRoofPosPositive()
+    public void Test_CalculateRoofSizePositive()
     {
         RoofParams roofParams = new RoofParams(Vector3.zero, Vector3.zero);
 

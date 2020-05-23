@@ -6,7 +6,15 @@ using UnityEngine;
 public class SquareOpening : Segment
 {
     private const string name = "squareOpening";
-    public SquareOpening(Vector3 goalSize, Material material,SquareOpeningParams squareOpeningParams)
+    private SquareOpeningParams squareOpeningParams;
+    public SquareOpening(Vector3 size, Material material,SquareOpeningParams _squareOpeningParams)
+    {
+        squareOpeningParams = _squareOpeningParams;
+
+        CreateBase(size, material);
+    }
+
+    void CreateBase(Vector3 size, Material material)
     {
         Vector3Int baseObjSize = BaseObjSizes.openingSqSize;
         GenerateBaseCube(material, baseObjSize, name);
@@ -14,19 +22,17 @@ public class SquareOpening : Segment
 
         Vector3[] vertices = mesh.vertices;
 
-        AlterCubeSize(new Vector3(squareOpeningParams.frameDimensions.x, goalSize.y*baseObjSize.y, squareOpeningParams.frameDimensions.z), baseObjSize,ref vertices);
-        SquareUp(goalSize,ref vertices, squareOpeningParams.frameDimensions.x, baseObjSize);
+        AlterCubeSize(new Vector3(squareOpeningParams.frameDimensions.x, size.y * baseObjSize.y, squareOpeningParams.frameDimensions.z), baseObjSize, ref vertices);
+        vertices = SquareUp(size, vertices, squareOpeningParams.frameDimensions.x, baseObjSize);
 
         mesh.vertices = vertices;
 
-        RemoveVerticesAndTriangles(CalculateRingSize(baseObjSize) *(baseObjSize.y+1),vertices.Length-1);
+        RemoveVerticesAndTriangles(CalculateRingSize(baseObjSize) * (baseObjSize.y + 1), vertices.Length - 1);
         mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         mesh.vertices = vertices;
         mesh.uv = GenerateUVs(vertices.Length, squareOpeningParams.frameColor);
-
     }
-
-    void SquareUp(Vector3 goalSize, ref Vector3[] vertices,float xSize,Vector3Int baseObjSize)
+    Vector3[] SquareUp(Vector3 goalSize, Vector3[] vertices,float xSize,Vector3Int baseObjSize)
     {
         int ring = CalculateRingSize(baseObjSize);
         int tempId = baseObjSize.x;
@@ -109,7 +115,7 @@ public class SquareOpening : Segment
             tempId++;
         }
         //---------------------------------
-
+        return vertices;
     }
 
    

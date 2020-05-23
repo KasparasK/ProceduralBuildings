@@ -61,15 +61,9 @@ public class GeneratorController : MonoBehaviour
     {
         startTime = EditorApplication.timeSinceStartup;
 
-
-        if (parentObj != null)
-            DestroyImmediate(parentObj);
-
-        parentObj = new GameObject();
-        parentObj.transform.position= Vector3.zero;
-        parentObj.name = "Building";
-
-        Building building = new Building(CreateBuildingParams(), material, parentObj.transform);
+        CreateParent("Building");
+        BuildingParams bParams = CreateBuildingParams();
+        new Building(bParams, material, parentObj.transform);
         endTime = EditorApplication.timeSinceStartup;
         Debug.Log("Generation finished. Duration: " + (endTime - startTime) * 1000 + " ms");
 
@@ -77,34 +71,40 @@ public class GeneratorController : MonoBehaviour
 
     public void GenerateCity()
     {
-        cityGeneration.Generate(material, CreateBuildingParams());
+        CreateParent("City");
+
+        cityGeneration.Generate(material, CreateBuildingParams(),parentObj.transform);
     }
     public void GenerationTest()
     {
         double totalTime = 0;
-        int retryCount = 200;
-
-      
+        int retryCount = 1000;
 
         for (int i = 0; i < retryCount; i++)
         {
             startTime = EditorApplication.timeSinceStartup;
 
-            if (parentObj != null)
-                DestroyImmediate(parentObj);
+            CreateParent("Building");
+            BuildingParams bParams = CreateBuildingParams();
 
-            parentObj = new GameObject();
-            parentObj.transform.position = Vector3.zero;
-            parentObj.name = "Building";
-
-            Building building = new Building(CreateBuildingParams(), material, parentObj.transform);
+            new Building(bParams, material, parentObj.transform);
             endTime = EditorApplication.timeSinceStartup;
 
             totalTime += (endTime - startTime);
         }
 
-        Debug.Log("Generation test finished.Average duration: " + totalTime/ retryCount * 1000 + " ms");
+        Debug.Log("Generation test finished. Total time spent: " + totalTime  + " sec; Average duration: " + totalTime/ retryCount * 1000 + " ms" );
 
+    }
+
+    void CreateParent(string name)
+    {
+        if (parentObj != null)
+            DestroyImmediate(parentObj);
+
+        parentObj = new GameObject();
+        parentObj.transform.position = Vector3.zero;
+        parentObj.name = name;
     }
 
     BuildingParams CreateBuildingParams()

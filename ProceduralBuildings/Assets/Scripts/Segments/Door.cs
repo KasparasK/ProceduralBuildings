@@ -5,14 +5,23 @@ using UnityEngine;
 public class Door : Segment
 {
     private Segment openingBase;
-    private Plane glass;
-
+    private Plane planks;
+    private DoorParams doorParams;
     public Door(
         Transform parent,
         Material material,
-        DoorParams doorParams
+        DoorParams _doorParams
     )
     {
+        doorParams = _doorParams;
+
+
+        CreateDoor(parent, material);
+    }
+
+    void CreateDoor(Transform parent, Material material)
+    {
+
         if (doorParams.openingStyle == OpeningStyle.ARCH)
             openingBase = new ArchedOpening(doorParams.finalSize, material, doorParams.archedOpeningParams);
         else
@@ -23,10 +32,8 @@ public class Door : Segment
         openingBase.obj.transform.localRotation = doorParams.finalRot;
 
 
-        glass = new Plane(material, openingBase.obj.transform, doorParams.finalSize, doorParams.planeParams);
-        glass.obj.transform.localPosition = doorParams.planeParams.finalPos;
-        glass.obj.transform.localRotation = doorParams.planeParams.finalRot;
-
-
+        planks = new Plane(material, openingBase.obj.transform, doorParams.finalSize, doorParams.planeParams);
+        planks.obj.transform.localPosition = doorParams.planeParams.finalPos;
+        planks.obj.transform.localRotation = doorParams.planeParams.finalRot;
     }
 }

@@ -7,17 +7,18 @@ public class Attic : Segment
 {
     private const string name = "attic";
     public List<Window> windows;
-
-    public Attic(Material material, AtticParams atticParams,Transform parent)
+    private AtticParams atticParams;
+    public Attic(Material material, AtticParams _atticParams,Transform parent)
     {
-        Vector3Int baseObjSize = BaseObjSizes.atticSize;
+        atticParams = _atticParams;
 
+        Vector3Int baseObjSize = BaseObjSizes.atticSize;
         GenerateBaseCube(material, baseObjSize,name);
         obj.transform.parent = parent;
-        AlterMesh(atticParams);
+        AlterMesh();
     }
 
-    void AlterMesh(AtticParams atticParams)
+    void AlterMesh( )
     {
         Mesh mesh = obj.GetComponent<MeshFilter>().sharedMesh;
         Vector3[] vertices = mesh.vertices;
@@ -25,7 +26,7 @@ public class Attic : Segment
         Vector3Int baseObjSize = atticParams.baseObjSize;
 
         AlterCubeSize(atticParams.finalSize, baseObjSize, ref vertices);
-        FormAttic(atticParams.finalSize,baseObjSize, ref vertices);
+        vertices = FormAttic(atticParams.finalSize,baseObjSize, vertices);
         mesh.vertices = vertices;
 
         int removeFrom = CalculateRingSize(baseObjSize) * (baseObjSize.y + 1);
@@ -39,7 +40,7 @@ public class Attic : Segment
         obj.transform.localPosition = atticParams.finalPos;
     }
 
-    void FormAttic(Vector3 goalSize,Vector3Int baseObjSize, ref Vector3[] vertices)
+    Vector3[] FormAttic(Vector3 goalSize,Vector3Int baseObjSize, Vector3[] vertices)
     {
 
         int ring = CalculateRingSize(baseObjSize);
@@ -78,11 +79,11 @@ public class Attic : Segment
         AlterVertexPosition(ref vertices[tempId], sizeToAdd);
         tempId++;
         AlterVertexPosition(ref vertices[tempId], sizeToAdd);
-        
-        
+
+        return vertices;
     }
 
-    public void GenerateWindows(AtticParams atticParams, Material material)
+    public void GenerateWindows(Material material)
     {
         windows = new List<Window>();
 
@@ -94,3 +95,4 @@ public class Attic : Segment
 
 
 }
+

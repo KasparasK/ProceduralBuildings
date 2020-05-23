@@ -6,18 +6,6 @@ using UnityEngine;
 using TMPro;
 using UnityEditor;
 
-public class Vertex
-{
-    public Vector3 pos;
-    public Vector3[] normals;
-
-    public Vertex(Vector3 pos, int normalsCount)
-    {
-        this.pos = pos;
-        normals = new Vector3[normalsCount];
-    }
-}
-
 public class MeshGenerator {
 
     int xSize, ySize, zSize;
@@ -91,7 +79,6 @@ public class MeshGenerator {
     void GenerateVertices()
     {
         int v = 0;
-
         //ziedu sluoksniai
         for (int y = 0; y <= ySize; y++)
         {
@@ -106,16 +93,13 @@ public class MeshGenerator {
             }
             for (int x = xSize; x >= 0; x--, v++)
             {
-
                 SetVertex(v, x, y, zSize);
             }
             for (int z = zSize; z >= 0; z--, v++)
             {
-
                 SetVertex(v, 0, y, z);
             }
         }
-
         //dugnas ir virsus
         for (int y = ySize; y >= 0; y -= ySize)
         {
@@ -127,13 +111,8 @@ public class MeshGenerator {
                     SetVertex(v, x, y, z);
                 }
             }
-
         }
-        
-
-
     }
-
     void GenerateVerticesPlane()
     {
         int v = 0;
@@ -172,7 +151,6 @@ public class MeshGenerator {
         }
 
     }
-
     int GenerateSideTriangles(int ring,int t)
     {
         triangles = new int[
@@ -211,13 +189,12 @@ public class MeshGenerator {
     }
     int GeneratePlaneTriangles(int ring, int t)
     {
-        triangles = new int[
-            xSize * ySize * 6
-        ];
+        triangles = new int[xSize * ySize * 6];
         for (int y = 0; y < ySize; y++)
         {
             for (int x = 0; x < xSize; x++, vertex++)
             {
+                //verteksu prisikirimas poligonui
                 SplitQuad(ref t,
                     vertex,
                     ring + vertex,
@@ -232,7 +209,6 @@ public class MeshGenerator {
     }
     int GenerateTopAndBottomTriangles(int ring, int t)
     {
-
         vertex = ring * (ySize+1);
 
         //virsus (flipinta viskas, palyginus su apacia)
@@ -259,13 +235,10 @@ public class MeshGenerator {
             }
             vertex++;
         }
-        
 
         //-----------------------------------------
 
-
         return t;
-
     }
 
     void SplitQuad(ref int t, int v00, int v01, int v10, int v11,bool debug = false )
@@ -280,9 +253,6 @@ public class MeshGenerator {
 
         t += 6; 
     }
-
-  
-
 
     public GameObject RemoveVerticesAndTriangles(GameObject obj, int removeFrom, int removeTo)
     {

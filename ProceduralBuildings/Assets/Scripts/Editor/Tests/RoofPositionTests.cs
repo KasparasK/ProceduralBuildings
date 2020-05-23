@@ -8,7 +8,6 @@ public class RoofPositionTests
     public void Test_CalculateRoofPosPositive()
     {
         RoofParams roofParams = new RoofParams(Vector3.zero, Vector3.zero);
-
         Vector3 lastBaseSize = new Vector3(2, 2, 2);
         Vector3 finalRoofSize = new Vector3(2.5f,3,2.5f);
 
@@ -22,7 +21,6 @@ public class RoofPositionTests
     public void Test_CalculateRoofPosNegative()
     {
         RoofParams roofParams = new RoofParams(Vector3.zero, Vector3.zero);
-
         Vector3 lastBaseSize = new Vector3(2, 2, 2);
         Vector3 finalRoofSize = new Vector3(1.5f, 1, 1.5f);
 
